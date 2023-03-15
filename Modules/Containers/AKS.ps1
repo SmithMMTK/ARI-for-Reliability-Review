@@ -108,7 +108,7 @@ Else
         $cond = @()
         Foreach ($UnSupOS in $Unsupported.AKS)
             {
-                $cond += New-ConditionalText $UnSupOS -Range E:E
+                $cond += New-ConditionalText $UnSupOS -Range F:F
             }
 
 
@@ -116,8 +116,8 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Clusters')
-        $Exc.Add('Location')
         $Exc.Add('Zones')
+        $Exc.Add('Location')
         $Exc.Add('Kubernetes Version')
         $Exc.Add('Orchestrator Version')
         $Exc.Add('Role-Based Access Control')

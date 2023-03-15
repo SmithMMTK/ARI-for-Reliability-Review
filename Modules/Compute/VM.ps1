@@ -189,6 +189,7 @@ else
                 $Exc.Add('Subscription')
                 $Exc.Add('Resource Group')
                 $Exc.Add('VM Name')
+                $Exc.Add('Zone')
                 $Exc.Add('VM Size')                
                 $Exc.Add('Location')
                 $Exc.Add('OS Type')

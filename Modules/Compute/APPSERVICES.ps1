@@ -45,6 +45,17 @@ If ($Task -eq 'Processing')
                 $VNET = $data.virtualNetworkSubnetId.split("/")[8]
                 $SUBNET = $data.virtualNetworkSubnetId.split("/")[10]
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                # Get service farm id
+                $serverFarmId = $data.serverFarmId
+
+                # Get service farm zoneRedundant from service farm id
+                $serverFarm = $Resources | Where-Object {$_.id -eq $serverFarmId}
+                $serverFarmZoneRedundant = $serverFarm.properties.zoneRedundant
+
+                # Convert Zone Redundant to a readable format
+                if($serverFarmZoneRedundant -eq 'true'){$serverFarmZoneRedundant = '1 2 3'}else{$serverFarmZoneRedundant = ''}
+
                 foreach ($2 in $data.hostNameSslStates) {
                         foreach ($Tag in $Tags) {
                             $obj = @{
@@ -52,7 +63,9 @@ If ($Task -eq 'Processing')
                                 'Subscription'                  = $sub1.Name;
                                 'Resource Group'                = $1.RESOURCEGROUP;
                                 'Name'                          = $1.NAME;
+                                'Zone Redundant'                = $serverFarmZoneRedundant;
                                 'App Type'                      = $1.KIND;
+                                'serverFarmId'                  = $serverFarmId;
                                 'Location'                      = $1.LOCATION;
                                 'Enabled'                       = $data.enabled;
                                 'State'                         = $data.state;
@@ -121,7 +134,9 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zone Redundant')
         $Exc.Add('App Type')
+        #$Exc.Add('serverFarmId')
         $Exc.Add('Location')
         #$Exc.Add('Enabled')
         $Exc.Add('State')

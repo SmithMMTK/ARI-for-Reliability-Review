@@ -39,11 +39,16 @@ If ($Task -eq 'Processing') {
                 $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
                 $data = $1.PROPERTIES
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                # Add ZoneRedundant "1, 2, 3" due it required by default
+                $zones = "1, 2, 3"
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                   = $1.id;
                             'Subscription'         = $sub1.Name;
                             'Resource Group'       = $1.RESOURCEGROUP;
+                            'Zones'                = $zones;
                             'Clusters'             = $1.NAME;
                             'Location'             = $1.LOCATION;
                             'ARO Version'          = $data.clusterProfile.version;
@@ -91,7 +96,8 @@ Else {
         $Exc = New-Object System.Collections.Generic.List[System.Object]
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
-        $Exc.Add('Clusters')         
+        $Exc.Add('Clusters')
+        $Exc.Add('Zones')         
         $Exc.Add('Location')             
         $Exc.Add('ARO Version')          
         $Exc.Add('ARO Domain')           

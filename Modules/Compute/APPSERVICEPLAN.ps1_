@@ -46,6 +46,10 @@ If ($Task -eq 'Processing')
                 $AutoScale = ($APPAutoScale | Where-Object {$_.Properties.targetResourceUri -eq $1.id})
                 if([string]::IsNullOrEmpty($AutoScale)){$AutoSc = $false}else{$AutoSc = $true}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                # Convert Zone Redundant to a readable format
+                if($data.zoneRedundant -eq 'true'){$data.zoneRedundant = '1 2 3'}else{$data.zoneRedundant = ''}
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                  = $1.id;
@@ -100,8 +104,9 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zone Redundant')
+        $Exc.Add('ID')
+        $Exc.Add('Location')
         $Exc.Add('Pricing Tier')
         $Exc.Add('Compute Mode')
         $Exc.Add('Intances Size')

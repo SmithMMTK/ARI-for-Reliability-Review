@@ -990,7 +990,8 @@ param ($TenantID,
                     $RawRepo = $($args[11])
 
                     If ($($args[9]) -eq $true) {
-                        $ResourceJobs = 'Compute', 'Analytics', 'Containers', 'Data', 'Infrastructure', 'Integration', 'Networking', 'Storage'
+                      $ResourceJobs = 'Compute', 'Analytics', 'Containers', 'Data', 'Infrastructure', 'Integration', 'Networking', 'Storage'
+                      
                         $Modules = @()
                         Foreach ($Jobs in $ResourceJobs)
                             {
