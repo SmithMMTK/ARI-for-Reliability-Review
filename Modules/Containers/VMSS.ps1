@@ -67,6 +67,7 @@ If ($Task -eq 'Processing')
                         'AKS / SFC'                     = $Related;
                         'Name'                          = $1.NAME;
                         'Location'                      = $1.LOCATION;
+                        'Zones'                         = [string]$1.zones;
                         'SKU Tier'                      = $1.sku.tier;
                         'Fault Domain'                  = $data.platformFaultDomainCount;
                         'Upgrade Policy'                = $data.upgradePolicy.mode;                                    
@@ -129,27 +130,28 @@ Else
         $Exc.Add('AKS / SFC')
         $Exc.Add('Name')
         $Exc.Add('Location')
-        $Exc.Add('SKU Tier')
+        $exc.Add('Zones')
+        #$Exc.Add('SKU Tier')
         $Exc.Add('Fault Domain')
-        $Exc.Add('Upgrade Policy')                                   
-        $Exc.Add('Diagnostics')
+        #$Exc.Add('Upgrade Policy')                                   
+        #$Exc.Add('Diagnostics')
         $Exc.Add('VM Size')
         $Exc.Add('Instances')
         $Exc.Add('Autoscale Enabled')
         $Exc.Add('VM OS')
         $Exc.Add('OS Image')
         $Exc.Add('Image Version')                        
-        $Exc.Add('VM OS Disk Size (GB)')
+        #$Exc.Add('VM OS Disk Size (GB)')
         $Exc.Add('Disk Storage Account Type')
         $Exc.Add('Disable Password Authentication')
-        $Exc.Add('Custom DNS Servers')
-        $Exc.Add('Virtual Network')
-        $Exc.Add('Subnet')
+        #$Exc.Add('Custom DNS Servers')
+        #$Exc.Add('Virtual Network')
+        #$Exc.Add('Subnet')
         $Exc.Add('Accelerated Networking Enabled')
-        $Exc.Add('Network Security Group')
-        $Exc.Add('Extensions')
+        #$Exc.Add('Network Security Group')
+        #$Exc.Add('Extensions')
         $Exc.Add('Admin Username')
-        $Exc.Add('VM Name Prefix')
+        #$Exc.Add('VM Name Prefix')
         if($InTag)
             {
                 $Exc.Add('Tag Name')

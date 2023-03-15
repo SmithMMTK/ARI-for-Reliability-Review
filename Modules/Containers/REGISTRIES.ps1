@@ -108,11 +108,12 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Location')
+        $Exc.Add('Zone Redundancy')
         $Exc.Add('SKU')
         $Exc.Add('Anonymous Pull Enabled')
         $Exc.Add('Encryption')
         $Exc.Add('Public Network Access')
-        $Exc.Add('Zone Redundancy')
+    
         $Exc.Add('Private Link')
         $Exc.Add('Soft Delete Policy')
         $Exc.Add('Trust Policy')

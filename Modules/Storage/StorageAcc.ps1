@@ -47,10 +47,10 @@ If ($Task -eq 'Processing') {
                             'Resource Group'                        = $1.RESOURCEGROUP;
                             'Name'                                  = $1.NAME;
                             'Location'                              = $1.LOCATION;
-                            'Zone'                                  = $1.ZONES;
+                        #    'Zone'                                  = $1.ZONES;
                             'SKU'                                   = $1.sku.name;
                             'Tier'                                  = $1.sku.tier;
-                            'Supports HTTPs Traffic Only'           = $data.supportsHttpsTrafficOnly;
+                          #  'Supports HTTPs Traffic Only'           = $data.supportsHttpsTrafficOnly;
                             'Allow Blob Public Access'              = if ($data.allowBlobPublicAccess -eq $false) { $false }else { $true };
                             'Minimum TLS Version'                   = $TLSv;
                             'Identity-based access for file shares' = if ($data.azureFilesIdentityBasedAuthentication.directoryServiceOptions -eq 'None') { $false }elseif ($null -eq $data.azureFilesIdentityBasedAuthentication.directoryServiceOptions) { $false }else { $true };
@@ -98,22 +98,22 @@ Else {
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Location')
-        $Exc.Add('Zone')
+       # $Exc.Add('Zone')
         $Exc.Add('SKU')
         $Exc.Add('Tier')
-        $Exc.Add('Supports HTTPS Traffic Only')
+      #  $Exc.Add('Supports HTTPS Traffic Only')
         $Exc.Add('Allow Blob Public Access')
         $Exc.Add('Minimum TLS Version')
-        $Exc.Add('Identity-based access for file shares')
-        $Exc.Add('Access Tier')
+     #   $Exc.Add('Identity-based access for file shares')
+    #    $Exc.Add('Access Tier')
         $Exc.Add('Primary Location')
-        $Exc.Add('Status Of Primary')
+      #  $Exc.Add('Status Of Primary')
         $Exc.Add('Secondary Location')
-        $Exc.Add('Hierarchical namespace')
-        $Exc.Add('Blob Address')
-        $Exc.Add('File Address')
-        $Exc.Add('Table Address')
-        $Exc.Add('Queue Address')
+       # $Exc.Add('Hierarchical namespace')
+        #$Exc.Add('Blob Address')
+        #$Exc.Add('File Address')
+        #$Exc.Add('Table Address')
+        #$Exc.Add('Queue Address')
         $Exc.Add('Network Acls')
         if($InTag)
             {

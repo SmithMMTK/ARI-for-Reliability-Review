@@ -101,6 +101,7 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Location')
+        $Exc.Add('Zone Redundant')
         $Exc.Add('Pricing Tier')
         $Exc.Add('Compute Mode')
         $Exc.Add('Intances Size')
@@ -110,7 +111,7 @@ Else
         $Exc.Add('App Plan OS')
         $Exc.Add('Apps Type')
         $Exc.Add('Apps')
-        $Exc.Add('Zone Redundant')
+       
         if($InTag)
             {
                 $Exc.Add('Tag Name')

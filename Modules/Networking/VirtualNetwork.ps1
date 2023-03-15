@@ -50,10 +50,10 @@ If ($Task -eq 'Processing') {
                                     'Enable DDOS Protection'                       = $data.enableDdosProtection;
                                     'Subnet Name'                                  = $3.name;
                                     'Subnet Prefix'                                = $3.properties.addressPrefix;
-                                    'Subnet Private Link Service Network Policies' = $3.properties.privateLinkServiceNetworkPolicies;
-                                    'Subnet Private Endpoint Network Policies'     = $3.properties.privateEndpointNetworkPolicies;
+                                    #'Subnet Private Link Service Network Policies' = $3.properties.privateLinkServiceNetworkPolicies;
+                                    #'Subnet Private Endpoint Network Policies'     = $3.properties.privateEndpointNetworkPolicies;
                                     'Subnet Route Table'                           = if ($3.properties.routeTable.id) { $3.properties.routeTable.id.split("/")[8] };
-                                    'Subnet Network Security Group'                = if ($3.properties.networkSecurityGroup.id) { $3.properties.networkSecurityGroup.id.split("/")[8] };
+                                    #'Subnet Network Security Group'                = if ($3.properties.networkSecurityGroup.id) { $3.properties.networkSecurityGroup.id.split("/")[8] };
                                     'Resource U'                                   = $ResUCount;
                                     'Tag Name'                                     = [string]$Tag.Name;
                                     'Tag Value'                                    = [string]$Tag.Value
@@ -88,10 +88,10 @@ Else {
         $Exc.Add('Enable DDOS Protection')
         $Exc.Add('Subnet Name')
         $Exc.Add('Subnet Prefix')
-        $Exc.Add('Subnet Private Link Service Network Policies')
-        $Exc.Add('Subnet Private Endpoint Network Policies')
+        #$Exc.Add('Subnet Private Link Service Network Policies')
+        #$Exc.Add('Subnet Private Endpoint Network Policies')
         $Exc.Add('Subnet Route Table')
-        $Exc.Add('Subnet Network Security Group')
+        #$Exc.Add('Subnet Network Security Group')
         if($InTag)
             {
                 $Exc.Add('Tag Name')

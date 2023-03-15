@@ -81,6 +81,7 @@ else {
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Location')
+        $Exc.Add('Zone Redundant')
         $Exc.Add('Storage Account Type')
         $Exc.Add('Database Server')
         $Exc.Add('Default Secondary Location')
@@ -88,7 +89,7 @@ else {
         $Exc.Add('DTU Capacity')
         $Exc.Add('DTU Tier')
         $Exc.Add('Data Max Size (GB)')
-        $Exc.Add('Zone Redundant')
+        
         $Exc.Add('Catalog Collation')
         $Exc.Add('Read Replica Count')
         if($InTag)
