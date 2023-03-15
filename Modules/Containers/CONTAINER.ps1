@@ -47,6 +47,7 @@ If ($Task -eq 'Processing')
                                 'ID'                  = $1.id;
                                 'Subscription'        = $sub1.Name;
                                 'Resource Group'      = $1.RESOURCEGROUP;
+                                'Zones'               = $1.zones;
                                 'Instance Name'       = $1.NAME;
                                 'Location'            = $1.LOCATION;
                                 'Instance OS Type'    = $data.osType;
@@ -90,6 +91,7 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Instance Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('Instance OS Type')
         $Exc.Add('Container Name')
