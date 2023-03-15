@@ -38,12 +38,14 @@ If ($Task -eq 'Processing') {
                 if(!$data.privateEndpointConnections){$PVTENDP = $false}else{$PVTENDP = $data.privateEndpointConnections.Id.split("/")[8]}
                 $sku = $1.SKU
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                $Zonal = ""
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                        = $1.id;
                             'Subscription'              = $sub1.Name;
                             'Resource Group'            = $1.RESOURCEGROUP;
                             'Name'                      = $1.NAME;
+                            'Zones'                     = $Zonal;
                             'Location'                  = $1.LOCATION;
                             'SKU'                       = $sku.name;
                             'SKU Family'                = $sku.family;
@@ -97,6 +99,7 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('SKU Family')

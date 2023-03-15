@@ -42,11 +42,13 @@ If ($Task -eq 'Processing') {
                     }
                 $VNETs = $VNETs | Select-Object -Unique
 
-                $Zonals = @()
+                
                 foreach ($Zonal in $data.locations)
                 {
-                    $redundancyStatus = if ($Zonal.isZoneRedundant) {'Zonal'} else {'Non-Zonal'}
-                    $Zonals += $Zonal.locationName + ': ' + $redundancyStatus + ','
+                    if ($reduncancyStatus -eq "1, 2, 3"){} else
+                    {
+                        $redundancyStatus = if ($Zonal.isZoneRedundant) {'1, 2, 3'}
+                    }
                 }
                 
                 $Zonals = $Zonals | Select-Object -Unique
@@ -63,7 +65,7 @@ If ($Task -eq 'Processing') {
                             'Resource Group'            = $1.RESOURCEGROUP;
                             'Name'                      = $1.NAME;
                             'Location'                  = $1.LOCATION;
-                            'Zones'                     = [string]$Zonals;
+                            'Zones'                     = $redundancyStatus;
                             'Enabled API Types'         = $data.EnabledApiTypes;
                             'Backup Policy'             = $data.backupPolicy.type;
                             'Backup Storage Redundancy' = $data.backupPolicy.periodicModeProperties.backupStorageRedundancy;
@@ -111,8 +113,8 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zones')
+        $Exc.Add('Location')
         $Exc.Add('Enabled API Types')
         $Exc.Add('Backup Policy')
         $Exc.Add('Backup Storage Redundancy')

@@ -128,9 +128,10 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('AKS / SFC')
+        $exc.Add('Zones')
         $Exc.Add('Name')
         $Exc.Add('Location')
-        $exc.Add('Zones')
+        
         #$Exc.Add('SKU Tier')
         $Exc.Add('Fault Domain')
         #$Exc.Add('Upgrade Policy')                                   

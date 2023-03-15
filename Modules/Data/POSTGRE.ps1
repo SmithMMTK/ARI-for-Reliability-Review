@@ -40,14 +40,10 @@ If ($Task -eq 'Processing') {
                 $sku = $1.SKU
                 if(!$data.privateEndpointConnections){$PVTENDP = $false}else{$PVTENDP = $data.privateEndpointConnections.Id.split("/")[8]}
 
-                $Zones = if($data.highAvailability.mode -eq 'ZoneRedundant') {'Zonal Enable'} else {'No Zone'}
+                $Zones = if($data.highAvailability.mode -eq 'ZoneRedundant') {'1, 2, 3'} else {''}
 
                 
-                $Zones | Out-File -FilePath ./Zones.txt
-                $data.highAvailability.mode | Out-File -FilePath ./mode.txt
-                
-
-
+         
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                     foreach ($Tag in $Tags) {
                         $obj = @{
@@ -110,8 +106,8 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zones')
+        $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('SKU Family')
         $Exc.Add('Tier')

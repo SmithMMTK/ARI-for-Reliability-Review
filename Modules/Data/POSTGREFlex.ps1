@@ -40,9 +40,9 @@ If ($Task -eq 'Processing') {
                 $sku = $1.SKU
 
                 if ($data.highAvailability.mode -eq "ZoneRedundant") {
-                    $HA = "Zone Redundant"
+                    $HA = "1, 2, 3"
                 } else {
-                    $HA = "No Zone"
+                    $HA = ""
                 }
 
                 if(!$data.privateEndpointConnections){$PVTENDP = $false}else{$PVTENDP = $data.privateEndpointConnections.Id.split("/")[8]}
@@ -109,8 +109,8 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zones')
+        $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('SKU Family')
         $Exc.Add('Tier')

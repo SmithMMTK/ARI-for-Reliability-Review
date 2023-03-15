@@ -41,6 +41,14 @@ If ($Task -eq 'Processing')
                 $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
                 $data = $1.PROPERTIES
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                
+                # Check if $data.zoneredundancy equal Enable change it to "1 2 3 "
+                if($data.zoneredundancy -eq 'Enabled')
+                {
+                    $zones = '1 2 3'
+                }
+                else{ $zones = ''}
+
                 foreach ($Tag in $Tags) {
                     $obj = @{
                         'ID'                        = $1.id;
@@ -52,7 +60,7 @@ If ($Task -eq 'Processing')
                         'Anonymous Pull Enabled'    = $data.anonymouspullenabled;
                         'Encryption'                = $data.encryption.status;
                         'Public Network Access'     = $data.publicnetworkaccess;
-                        'Zone Redundancy'           = $data.zoneredundancy;
+                        'Zone Redundancy'           = $zones;
                         'Private Link'              = if($data.privateendpointconnections){'True'}else{'False'};
                         'Soft Delete Policy'        = $data.policies.softdeletepolicy.status;
                         'Trust Policy'              = $data.policies.trustpolicy.status;
@@ -107,8 +115,8 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zone Redundancy')
+        $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('Anonymous Pull Enabled')
         $Exc.Add('Encryption')
