@@ -42,6 +42,11 @@ if ($Task -eq 'Processing') {
                 $data = $1.PROPERTIES
                 $DBServer = [string]$1.id.split("/")[8]
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                # If $data.zoneRedundant is not null then it is a zone redundant database so generate output string "1, 2, 3"
+                if ($data.zoneRedundant) {
+                    $zonal = "1, 2, 3"
+                } else { $zonal = ""}
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                         = $1.id;
@@ -55,7 +60,8 @@ if ($Task -eq 'Processing') {
                             'Status'                     = $data.status;
                             'DTU Capacity'               = $data.currentSku.capacity;
                             'DTU Tier'                   = $data.requestedServiceObjectiveName;
-                            'Zone Redundant'             = $data.zoneRedundant;
+                            #'Zone Redundant'             = $data.zoneRedundant;
+                            'Zone Redundant'             = $zonal;
                             'Catalog Collation'          = $data.catalogCollation;
                             'Read Replica Count'         = $data.readReplicaCount;
                             'Data Max Size (GB)'         = (($data.maxSizeBytes / 1024) / 1024) / 1024;
@@ -80,8 +86,8 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zone Redundant')
+        $Exc.Add('Location')
         $Exc.Add('Storage Account Type')
         $Exc.Add('Database Server')
         $Exc.Add('Default Secondary Location')

@@ -83,6 +83,7 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zone Redundant')
         $Exc.Add('Location')
         $Exc.Add('Kind')
         $Exc.Add('Admin Login')
@@ -91,7 +92,7 @@ else {
         $Exc.Add('Public Network Access')
         $Exc.Add('State')
         $Exc.Add('Version')
-        $Exc.Add('Zone Redundant')
+        
         if($InTag)
             {
                 $Exc.Add('Tag Name')

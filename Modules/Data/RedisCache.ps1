@@ -40,7 +40,7 @@ If ($Task -eq 'Processing') {
                 $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
                 $data = $1.PROPERTIES
                 $PvtEndP = $data.privateEndpointConnections.properties.privateEndpoint.id.split('/')[8]
-                if ($1.ZONES) { $Zones = $1.ZONES }else { $Zones = 'Not Configured' }
+                if ($1.ZONES) { $Zones = $1.ZONES }else { $Zones = '' }
                 if ([string]::IsNullOrEmpty($data.minimumTlsVersion)){$MinTLS = 'Default'}Else{$MinTLS = "TLS $($data.minimumTlsVersion)"}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                     foreach ($Tag in $Tags) {
@@ -101,9 +101,9 @@ Else {
         $Exc = New-Object System.Collections.Generic.List[System.Object]
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
-        $Exc.Add('Name')                    
-        $Exc.Add('Location')           
-        $Exc.Add('Zone')                    
+        $Exc.Add('Name')      
+        $Exc.Add('Zone')                  
+        $Exc.Add('Location')                           
         $Exc.Add('Version')                 
         $Exc.Add('Public Network Access')
         $Exc.Add('FQDN')                    

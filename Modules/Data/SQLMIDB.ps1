@@ -39,7 +39,12 @@ if ($Task -eq 'Processing') {
                 $Tags = if(!!($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
 
                 $pvteps = if(!($data.privateEndpointConnections)) {[pscustomobject]@{id = 'NONE'}} else {$data.privateEndpointConnections | Select-Object @{Name="id";Expression={$_.id.split("/")[10]}}}
-
+                
+                # If $data.zoneRedundant is not null then it is a zone redundant database so generate output string "1, 2, 3"
+                if ($data.zoneRedundant) {
+                    $zonal = "1, 2, 3"
+                } else { $zonal = ""}
+                
                 foreach ($pvtep in $pvteps) {
                     foreach ($Tag in $Tags) {
                         $obj = @{
@@ -53,6 +58,7 @@ if ($Task -eq 'Processing') {
                             'Status'           = $data.status;
                             'Tag Name'              = [string]$Tag.Name;
                             'Tag Value'             = [string]$Tag.Value
+                            'Zones'                 = $zonal;
                         }
                         $tmp += $obj
                         if ($ResUCount -eq 1) { $ResUCount = 0 } 
@@ -78,6 +84,7 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('MI parent')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Collation')
         $Exc.Add('CreationDate')
         $Exc.Add('DefaultSecondaryLocation')

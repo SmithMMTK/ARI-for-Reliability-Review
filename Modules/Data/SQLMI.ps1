@@ -39,7 +39,12 @@ if ($Task -eq 'Processing') {
                 $Tags = if(!!($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
 
                 $pvteps = if(!($1.privateEndpointConnections)) {[pscustomobject]@{id = 'NONE'}} else {$1.privateEndpointConnections | Select-Object @{Name="id";Expression={$_.id.split("/")[8]}}}
-
+                
+                # If $data.zoneRedundant is not null then it is a zone redundant database so generate output string "1, 2, 3"
+                if ($data.zoneRedundant) {
+                    $zonal = "1, 2, 3"
+                } else { $zonal = ""}
+                
                 foreach ($pvtep in $pvteps) {
                     foreach ($Tag in $Tags) {
                         $obj = @{
@@ -59,7 +64,8 @@ if ($Task -eq 'Processing') {
                             'licenseType'           = $data.licenseType;
                             'managedInstanceCreateMode'               = $data.managedInstanceCreateMode;
                             'Resource U'            = $ResUCount;
-                            'Zone Redundant'        = $data.zoneRedundant;
+                            #'Zone Redundant'        = $data.zoneRedundant;
+                            'Zone Redundant'        = $zonal
                             'Tag Name'              = [string]$Tag.Name;
                             'Tag Value'             = [string]$Tag.Value
                         }
@@ -89,6 +95,7 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zone Redundant')
         $Exc.Add('Location')
         $Exc.Add('SkuName')
         $Exc.Add('SkuCapacity')
@@ -100,7 +107,7 @@ else {
         $Exc.Add('Public Network Access')
         $Exc.Add('licenseType')
         $Exc.Add('managedInstanceCreateMode')
-        $Exc.Add('Zone Redundant')
+        
         if($InTag)
             {
                 $Exc.Add('Tag Name')
