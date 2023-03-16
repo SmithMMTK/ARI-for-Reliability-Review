@@ -41,12 +41,15 @@ If ($Task -eq 'Processing')
                 $data = $1.PROPERTIES
                 $sku = $1.SKU
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                 # Add ZoneRedundant "Zone Redundant" due it required by default
+                 $zones = "Zone Redundant"
                     foreach ($Tag in $Tags) { 
                         $obj = @{
                             'ID'                   = $1.id;
                             'Subscription'         = $sub1.Name;
                             'Resource Group'       = $1.RESOURCEGROUP;
                             'Name'                 = $1.NAME;
+                            'Zones'                = $zones;
                             'Location'             = $1.LOCATION;
                             'SKU'                  = $sku.name;
                             'Status'               = $data.status;
@@ -84,6 +87,7 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('Status')

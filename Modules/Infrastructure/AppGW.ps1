@@ -86,8 +86,9 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zones')
+        $Exc.Add('Location')
+        
         $Exc.Add('State')
         $Exc.Add('WAF Enabled')
         $Exc.Add('Minimum TLS Version')

@@ -38,6 +38,9 @@ If ($Task -eq 'Processing') {
 
                 $vnlks = ($VNETLinks | Where-Object {$_.id -like ($1.id + '*')})
                 $vnlks = if (!$vnlks) {[pscustomobject]@{id = 'none'}} else {$vnlks | Select-Object @{Name="id";Expression={$_.properties.virtualNetwork.id.split("/")[8]}}}
+                
+                # Add ZoneRedundant "Zone Redundant" due it required by default
+                $zones = "Zone Redundant"
 
                 foreach ($2 in $vnlks) {
 
@@ -49,6 +52,7 @@ If ($Task -eq 'Processing') {
                             'Subscription'                    = $sub1.Name;
                             'Resource Group'                  = $1.RESOURCEGROUP;
                             'Name'                            = $1.NAME;
+                            'Zones'                           = $zones;
                             'Location'                        = $1.LOCATION;
                             'Number of Records'               = $data.numberOfRecordSets;
                             'Virtual Network Links'           = $data.numberOfVirtualNetworkLinks;
@@ -78,6 +82,7 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('Number of Records')
         $Exc.Add('Virtual Network Links')

@@ -41,6 +41,10 @@ If ($Task -eq 'Processing')
                 $data = $1.PROPERTIES
                 if([string]::IsNullOrEmpty($Data.enableSoftDelete)){$Soft = $false}else{$Soft = $Data.enableSoftDelete}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                 # Add ZoneRedundant "Zone Redundant" due it required by default
+                 $zones = "Zone Redundant"
+
                 Foreach($2 in $data.accessPolicies)
                     {
                     foreach ($Tag in $Tags) {
@@ -49,6 +53,7 @@ If ($Task -eq 'Processing')
                             'Subscription'               = $sub1.Name;
                             'Resource Group'             = $1.RESOURCEGROUP;
                             'Name'                       = $1.NAME;
+                            'Zones'                      = $zones;
                             'Location'                   = $1.LOCATION;
                             'SKU Family'                 = $data.sku.family;
                             'SKU'                        = $data.sku.name;
@@ -94,6 +99,7 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('SKU Family')
         $Exc.Add('SKU')

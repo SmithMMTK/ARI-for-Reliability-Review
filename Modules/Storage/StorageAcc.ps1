@@ -40,6 +40,10 @@ If ($Task -eq 'Processing') {
                 $data = $1.PROPERTIES
                 $TLSv = if ($data.minimumTlsVersion -eq 'TLS1_2') { "TLS 1.2" }elseif ($data.minimumTlsVersion -eq 'TLS1_1') { "TLS 1.1" }else { "TLS 1.0" }
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                # find string zrs or zgrs in sku.name if found generate new string with "1, 2, 3" values
+                $zones = if ($1.sku.name -match 'zrs') { "1, 2, 3" } else { "" }
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                                    = $1.id;
@@ -47,7 +51,7 @@ If ($Task -eq 'Processing') {
                             'Resource Group'                        = $1.RESOURCEGROUP;
                             'Name'                                  = $1.NAME;
                             'Location'                              = $1.LOCATION;
-                        #    'Zone'                                  = $1.ZONES;
+                            'Zone'                                  = $zones;
                             'SKU'                                   = $1.sku.name;
                             'Tier'                                  = $1.sku.tier;
                           #  'Supports HTTPs Traffic Only'           = $data.supportsHttpsTrafficOnly;
@@ -97,8 +101,9 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zone')
         $Exc.Add('Location')
-       # $Exc.Add('Zone')
+       
         $Exc.Add('SKU')
         $Exc.Add('Tier')
       #  $Exc.Add('Supports HTTPS Traffic Only')

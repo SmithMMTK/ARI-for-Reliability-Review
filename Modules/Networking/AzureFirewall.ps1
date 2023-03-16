@@ -87,8 +87,9 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Location')
         $Exc.Add('Zones')
+        $Exc.Add('Location')
+        
         $Exc.Add('SKU')
         $Exc.Add('Threat Intel Mode')
         $Exc.Add('Zone')

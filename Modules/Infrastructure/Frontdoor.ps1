@@ -37,6 +37,8 @@ If ($Task -eq 'Processing') {
                     $data = $1.PROPERTIES
                     if([string]::IsNullOrEmpty($data.frontendendpoints.properties.webApplicationFirewallPolicyLink.id)){$WAF = $false} else {$WAF = $data.frontendendpoints.properties.webApplicationFirewallPolicyLink.id.split('/')[8]}
                     $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                     # Add ZoneRedundant "Zone Redundant" due it required by default
+                    $zones = "Zone Redundant"  
                         foreach ($Tag in $Tags) 
                             {  
                                 $obj = @{
@@ -44,6 +46,7 @@ If ($Task -eq 'Processing') {
                                     'Subscription'   = $sub1.Name;
                                     'Resource Group' = $1.RESOURCEGROUP;
                                     'Name'           = $1.NAME;
+                                    'Zones'          = $zones;
                                     'Location'       = $1.LOCATION;
                                     'Friendly Name'  = $data.friendlyName;
                                     'cName'          = $data.cName;
@@ -80,6 +83,7 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('Friendly Name')
         $Exc.Add('cName')

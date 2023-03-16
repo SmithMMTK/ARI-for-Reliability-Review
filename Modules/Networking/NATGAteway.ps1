@@ -36,6 +36,8 @@ If ($Task -eq 'Processing') {
                     $sub1 = $SUB | Where-Object { $_.Id -eq $1.subscriptionId }
                     $data = $1.PROPERTIES
                     $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                    $zones = ''
                         foreach ($2 in $data.subnets)
                             {
                                 foreach ($Tag in $Tags) 
@@ -57,6 +59,7 @@ If ($Task -eq 'Processing') {
                                             'Subscription'          = $sub1.Name;
                                             'Resource Group'        = $1.RESOURCEGROUP;
                                             'Name'                  = $1.NAME;
+                                            'Zones'                 = $zones;
                                             'Location'              = $1.LOCATION;
                                             'SKU'                   = $1.sku.name;
                                             'Idle Timeout (Min)'    = $data.idleTimeoutInMinutes;
@@ -88,6 +91,7 @@ Else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('Idle Timeout (Min)')
