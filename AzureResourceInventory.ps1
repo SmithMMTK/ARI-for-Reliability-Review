@@ -79,6 +79,8 @@ param ($TenantID,
         $ReportName = 'AzureResourceInventory', 
         $ReportDir)
 
+    $Global:myVariable = "Hello, world!"
+
     if ($Debug.IsPresent) {$DebugPreference = 'Continue'}
 
     if ($Debug.IsPresent) {$ErrorActionPreference = "Continue" }Else {$ErrorActionPreference = "silentlycontinue" }
@@ -89,6 +91,7 @@ param ($TenantID,
 
     $Global:SRuntime = Measure-Command -Expression {
 
+   
     <#########################################################          Help          ######################################################################>
 
     Function usageMode() {

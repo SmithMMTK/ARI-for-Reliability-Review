@@ -41,7 +41,29 @@ If ($Task -eq 'Processing')
                 $data = $1.PROPERTIES
                 if([string]::IsNullOrEmpty($data.addonProfiles.omsagent.config.logAnalyticsWorkspaceResourceID)){$Insights = $false}else{$Insights = $data.addonProfiles.omsagent.config.logAnalyticsWorkspaceResourceID.split('/')[8]}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                
+
                 foreach ($2 in $data.agentPoolProfiles) {
+
+                  # Load Get-Service Detail Module
+                   . ./Get-ServiceDetails.ps1 
+
+                    $jsonOutput = if ($2.availabilityZones) {
+                        Get-ServiceDetails -Type 'microsoft.containerservice/managedclusters' -Zonal 'Enable'
+                    } else {
+                        Get-ServiceDetails -Type 'microsoft.containerservice/managedclusters' -Zonal 'Disable'
+                    }
+                    
+
+                    # Get RTO information from $jsonOutput field RTO
+                    $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+
+                    # Get RPO information from $jsonOutput field RPO
+                    $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+
+                    # Get SLA information from $jsonOutput field SLA
+                    $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
+
                         foreach ($Tag in $Tags) {
                             $obj = @{
                                 'ID'                         = $1.id;
@@ -49,6 +71,9 @@ If ($Task -eq 'Processing')
                                 'Resource Group'             = $1.RESOURCEGROUP;
                                 'Clusters'                   = $1.NAME;
                                 'Location'                   = $1.LOCATION;
+                                'RTO'                        = [string]$RTO;
+                                'RPO'                        = [string]$RPO;
+                                'SLA'                        = [string]$SLA;
                                 'Kubernetes Version'         = $data.kubernetesVersion;
                                 'Role-Based Access Control'  = $data.enableRBAC;
                                 'AAD Enabled'                = if ($data.aadProfile) { $true }else { $false };
@@ -108,7 +133,7 @@ Else
         $cond = @()
         Foreach ($UnSupOS in $Unsupported.AKS)
             {
-                $cond += New-ConditionalText $UnSupOS -Range F:F
+                $cond += New-ConditionalText $UnSupOS -Range I:J
             }
 
 
@@ -117,6 +142,9 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('Clusters')
         $Exc.Add('Zones')
+        $Exc.Add('RTO')
+        $Exc.Add('RPO')
+        $Exc.Add("SLA")
         $Exc.Add('Location')
         $Exc.Add('Kubernetes Version')
         $Exc.Add('Orchestrator Version')

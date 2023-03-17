@@ -59,6 +59,30 @@ If ($Task -eq 'Processing')
                                 }
                 $NSG = $data.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.properties.networkSecurityGroup.id.split('/')[8] 
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                 # Load Get-Service Detail Module
+                 . ./Get-ServiceDetails.ps1 
+
+                 $jsonOutput = if ($1.zones) {
+                    Get-ServiceDetails -Type 'microsoft.compute/virtualmachinescalesets' -Zonal 'Enable'
+                    } else {
+                    Get-ServiceDetails -Type 'microsoft.compute/virtualmachinescalesets' -Zonal 'Disable'
+                    }
+                
+                
+
+                # Get RTO information from $jsonOutput field RTO
+                $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+
+             
+                # Get RPO information from $jsonOutput field RPO
+                $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+                
+
+                # Get SLA information from $jsonOutput field SLA
+                $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
+                Write-Output $SLA | Out-File -Append -FilePath ./RPO.log
+
                 foreach ($Tag in $Tags) {
                     $obj = @{
                         'ID'                            = $1.id;
@@ -67,6 +91,9 @@ If ($Task -eq 'Processing')
                         'AKS / SFC'                     = $Related;
                         'Name'                          = $1.NAME;
                         'Location'                      = $1.LOCATION;
+                        'RTO'                        = [string]$RTO;
+                        'RPO'                        = [string]$RPO;
+                        'SLA'                        = [string]$SLA;
                         'Zones'                         = [string]$1.zones;
                         'SKU Tier'                      = $1.sku.tier;
                         'Fault Domain'                  = $data.platformFaultDomainCount;
@@ -129,6 +156,9 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('AKS / SFC')
         $exc.Add('Zones')
+        $Exc.Add('RTO')
+        $Exc.Add('RPO')
+        $Exc.Add("SLA")
         $Exc.Add('Name')
         $Exc.Add('Location')
         
