@@ -81,7 +81,7 @@ If ($Task -eq 'Processing')
 
                 # Get SLA information from $jsonOutput field SLA
                 $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
-                Write-Output $SLA | Out-File -Append -FilePath ./RPO.log
+                
 
                 foreach ($Tag in $Tags) {
                     $obj = @{
