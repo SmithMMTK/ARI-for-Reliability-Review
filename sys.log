@@ -1,0 +1,19 @@
+disabled
+enabled
+disabled
+False
+enabled
+True
+disabled
+False
+enabled
+True
+disabled
+False
+enabled
+True
+{
+  "RTO": "GRS",
+  "RPO": "GRS",
+  "SLA": "GRS"
+}

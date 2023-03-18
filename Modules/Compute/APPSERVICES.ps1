@@ -53,8 +53,30 @@ If ($Task -eq 'Processing')
                 $serverFarm = $Resources | Where-Object {$_.id -eq $serverFarmId}
                 $serverFarmZoneRedundant = $serverFarm.properties.zoneRedundant
 
+                # Load Get-Service Detail Module
+                . ./Get-ServiceDetails.ps1 
+                
+
                 # Convert Zone Redundant to a readable format
-                if($serverFarmZoneRedundant -eq 'true'){$serverFarmZoneRedundant = '1 2 3'}else{$serverFarmZoneRedundant = ''}
+                if($serverFarmZoneRedundant -eq 'true')
+                {
+                    $serverFarmZoneRedundant = '1 2 3'
+                    $jsonOutput = Get-ServiceDetails -Type 'AppSvc' -Resilience 'Zonal'
+                }
+                else
+                {
+                    $serverFarmZoneRedundant = ''
+                    $jsonOutput = Get-ServiceDetails -Type 'AppSvc' -Resilience 'Single'
+                }
+                # Get RTO information from $jsonOutput field RTO
+                $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+            
+                # Get RPO information from $jsonOutput field RPO
+                $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+                
+                # Get SLA information from $jsonOutput field SLA
+                $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
+
 
                 foreach ($2 in $data.hostNameSslStates) {
                         foreach ($Tag in $Tags) {
@@ -64,6 +86,9 @@ If ($Task -eq 'Processing')
                                 'Resource Group'                = $1.RESOURCEGROUP;
                                 'Name'                          = $1.NAME;
                                 'Zone Redundant'                = $serverFarmZoneRedundant;
+                                'RTO'                           = [string]$RTO;
+                                'RPO'                           = [string]$RPO;
+                                'SLA'                           = [string]$SLA;
                                 'App Type'                      = $1.KIND;
                                 'serverFarmId'                  = $serverFarmId;
                                 'Location'                      = $1.LOCATION;
@@ -135,6 +160,9 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Zone Redundant')
+        $Exc.Add('RTO')
+        $Exc.Add('RPO')
+        $Exc.Add("SLA")
         $Exc.Add('App Type')
         #$Exc.Add('serverFarmId')
         $Exc.Add('Location')

@@ -45,6 +45,41 @@ If ($Task -eq 'Processing') {
                     $HA = ""
                 }
 
+                 # Load Get-Service Detail Module
+                 . ./Get-ServiceDetails.ps1    
+
+                Write-Output $data.backup.geoRedundantBackup| Out-File -Append -FilePath ./sys.log
+
+                # Check geoRedundantBackup from $data.backup that Enabled or Disabled then assign True / False to $geoBackup
+                if ($data.backup.geoRedundantBackup -eq "enabled") {
+                    $geoBackup = $true
+                } else {
+                    $geoBackup = $false
+                }
+
+                
+
+
+                # If $geoBackup is true send to Get-ServiceDetails module the value "GeoRedundant" else send "Local"
+                if ($geoBackup) {
+                    Write-Output "True" | Out-File -Append -FilePath ./sys.log
+                    $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQLFlex-Geo'  -Resilience 'Single'
+                } else {
+                    Write-Output "False" | Out-File -Append -FilePath ./sys.log
+                }
+
+                    Write-Output $jsonOutput | Out-File -Append -FilePath ./sys.log
+                
+                # Get RTO information from $jsonOutput field RTO
+                $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+
+                # Get RPO information from $jsonOutput field RPO
+                $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+                
+                # Get SLA information from $jsonOutput field SLA
+                $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
+
+
                 if(!$data.privateEndpointConnections){$PVTENDP = $false}else{$PVTENDP = $data.privateEndpointConnections.Id.split("/")[8]}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                     foreach ($Tag in $Tags) {
@@ -53,6 +88,9 @@ If ($Task -eq 'Processing') {
                             'Subscription'              = $sub1.Name;
                             'Resource Group'            = $1.RESOURCEGROUP;
                             'Name'                      = $1.NAME;
+                            'RTO'                           = [string]$RTO;
+                            'RPO'                           = [string]$RPO;
+                            'SLA'                           = [string]$SLA;  
                             'Location'                  = $1.LOCATION;
                             'Zones'                     = $HA;
                             'SKU'                       = $sku.name;
@@ -62,7 +100,7 @@ If ($Task -eq 'Processing') {
                             'Postgre Version'           = $data.version;
                             'Private Endpoint'          = $PVTENDP;
                             'Backup Retention Days'     = $data.storageProfile.backupRetentionDays;
-                            'Geo-Redundant Backup'      = $data.storageProfile.geoRedundantBackup;
+                            'Geo-Redundant Backup'      = $data.backup.geoRedundantBackup ;
                             'Auto Grow'                 = $data.storageProfile.storageAutogrow;
                             'Storage MB'                = $data.storageProfile.storageMB;
                             'Public Network Access'     = $data.publicNetworkAccess;
@@ -110,6 +148,9 @@ Else {
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Zones')
+        $Exc.Add('RTO')
+        $Exc.Add('RPO')
+        $Exc.Add("SLA")
         $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('SKU Family')

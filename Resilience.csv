@@ -2,7 +2,15 @@ Type,Resilience,RPO,RTO,SLA
 AKS,Zonal,N/A,Near zero,99.95%
 AKS,Single,N/A,120 minutes,99.9%
 VMSS,Zonal,N/A,Near zero,99.99%
-VM-Premium,Single,Loss,120 minutes,99.9%
-VM-StandardSSD,Single,Loss,60 minutes,99.5%
-VM-Standard,Single,Loss,60 minutes,95%
+VM-Premium,Single,LRS,60 minutes,99.9%
+VM-StandardSSD,Single,LRS,60 minutes,99.5%
+VM-Standard,Single,LRS,60 minutes,95%
 VM-Other,Single,N/A,N/A,N/A
+AppSvc,Zonal,N/A,Near zero,99.95%
+AppSvc,Single,N/A,90 minutes,99.95%
+AzureSQL,Zonal,5 seconds, 30 seconds,99.995%
+AzureSQL-LRS,Single, 5 minutes, 2 hours, 99.99%
+AzureSQL-GRS,Single,5 minutes (LRS) and 1 hour (GRS),2 hours (LRS) and 12 hours (GRS),99.99%
+AzureSQL-Other,Single,N/A,N/A,N/A
+AzurePostgreSQLFlex,Zonal,0,120 seconds,99.99%
+AzurePostgreSQLFlex-Geo,Single,GRS,GRS,GRS

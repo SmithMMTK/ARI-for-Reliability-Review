@@ -42,10 +42,41 @@ if ($Task -eq 'Processing') {
                 $data = $1.PROPERTIES
                 $DBServer = [string]$1.id.split("/")[8]
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                # Load Get-Service Detail Module
+                . ./Get-ServiceDetails.ps1                 
+
+                Write-Output $$1.StorageAccountType | Out-File -Append -FilePath ./sys.log
+
                 # If $data.zoneRedundant is not null then it is a zone redundant database so generate output string "1, 2, 3"
-                if ($data.zoneRedundant) {
+                if ($data.zoneRedundant) 
+                {
                     $zonal = "1, 2, 3"
-                } else { $zonal = ""}
+                    $jsonOutput = Get-ServiceDetails -Type 'AzureSQL'  -Resilience 'Zonal'
+                } 
+                else 
+                { 
+                    $zonal = ""
+                    if ($data.storageAccountType -eq 'LRS') 
+                    {
+                        $jsonOutput = Get-ServiceDetails -Type 'AzureSQL-LRS'  -Resilience 'Single'
+                    } 
+                    elseif ($data.storageAccountType -eq 'GRS')
+                    }
+                    else
+                    {
+                        $jsonOutput = Get-ServiceDetails -Type 'AzureSQL-Other'  -Resilience 'Single'
+                    }
+                }
+
+                # Get RTO information from $jsonOutput field RTO
+                $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+
+                # Get RPO information from $jsonOutput field RPO
+                $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+                
+                # Get SLA information from $jsonOutput field SLA
+                $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
                     foreach ($Tag in $Tags) {
                         $obj = @{
@@ -54,6 +85,9 @@ if ($Task -eq 'Processing') {
                             'Resource Group'             = $1.RESOURCEGROUP;
                             'Name'                       = $1.NAME;
                             'Location'                   = $1.LOCATION;
+                            'RTO'                           = [string]$RTO;
+                            'RPO'                           = [string]$RPO;
+                            'SLA'                           = [string]$SLA;                            
                             'Storage Account Type'       = $data.storageAccountType;
                             'Database Server'            = $DBServer;
                             'Default Secondary Location' = $data.defaultSecondaryLocation;
@@ -87,6 +121,9 @@ else {
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Zone Redundant')
+        $Exc.Add('RTO')
+        $Exc.Add('RPO')
+        $Exc.Add("SLA")
         $Exc.Add('Location')
         $Exc.Add('Storage Account Type')
         $Exc.Add('Database Server')
