@@ -101,6 +101,36 @@ If ($Task -eq 'Processing')
                         $VNET = $vmnic.properties.ipConfigurations.properties.subnet.id.split('/')[8]
                         $Subnet = $vmnic.properties.ipConfigurations.properties.subnet.id.split('/')[10]
 
+                        # Load Get-Service Detail Module
+                        . ./Get-ServiceDetails.ps1 
+
+                        $jsonOutput = if ($OSDisk -eq 'Premium_LRS')
+                        {
+                            Get-ServiceDetails -Type 'VM-Premium' -Resilience 'Single'
+                        }
+                        elseif ($OSDisk -eq 'StandardSSD_LRS')
+                        {
+                            Get-ServiceDetails -Type 'VM-StandardSSD' -Resilience 'Single'
+                        }
+                        elseif ($OSDisk -eq 'Standard_LRS')
+                        {
+                            Get-ServiceDetails -Type 'VM-Standard' -Resilience 'Single'
+                        }
+                        else
+                        {
+                            Get-ServiceDetails -Type 'VM-Other' -Resilience 'Single'
+                        }
+
+                        # Get RTO information from $jsonOutput field RTO
+                        $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+                    
+                        # Get RPO information from $jsonOutput field RPO
+                        $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+                        
+                        # Get SLA information from $jsonOutput field SLA
+                        $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
+
+
                         foreach ($Tag in $Tags) 
                             {
                                 $obj = @{
@@ -110,6 +140,9 @@ If ($Task -eq 'Processing')
                                 'VM Name'                       = $1.NAME;
                                 'Location'                      = $1.LOCATION;
                                 'Zone'                          = [string]$1.ZONES;
+                                'RTO'                           = [string]$RTO;
+                                'RPO'                           = [string]$RPO;
+                                'SLA'                           = [string]$SLA;
                                 'Availability Set'              = $AVSET;
                                 'VM Size'                       = $data.hardwareProfile.vmSize;
                                 'Image Reference'               = $data.storageProfile.imageReference.publisher;
@@ -190,6 +223,9 @@ else
                 $Exc.Add('Resource Group')
                 $Exc.Add('VM Name')
                 $Exc.Add('Zone')
+                $Exc.Add('RTO')
+                $Exc.Add('RPO')
+                $Exc.Add("SLA")
                 $Exc.Add('VM Size')                
                 $Exc.Add('Location')
                 $Exc.Add('OS Type')

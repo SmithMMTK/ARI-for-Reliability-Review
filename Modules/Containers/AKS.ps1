@@ -48,10 +48,12 @@ If ($Task -eq 'Processing')
                   # Load Get-Service Detail Module
                    . ./Get-ServiceDetails.ps1 
 
+                   # Get RTO, RPO and SLA information from Get-ServiceDetails Module
+
                     $jsonOutput = if ($2.availabilityZones) {
-                        Get-ServiceDetails -Type 'microsoft.containerservice/managedclusters' -Zonal 'Enable'
+                        Get-ServiceDetails -Type 'AKS' -Resilience 'Zonal'
                     } else {
-                        Get-ServiceDetails -Type 'microsoft.containerservice/managedclusters' -Zonal 'Disable'
+                        Get-ServiceDetails -Type 'AKS' -Resilience 'Single'
                     }
                     
 

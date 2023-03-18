@@ -5,15 +5,15 @@ function Get-ServiceDetails {
         [string]$Type,
 
         [Parameter(Mandatory=$true)]
-        [string]$Zonal
+        [string]$Resilience
     )
 
     # Import the CSV file
-    $data = Import-Csv -Path 'zonal.csv'
+    $data = Import-Csv -Path 'resilience.csv'
 
     Write-Host $data
     # Select the rows where the "Type" column equals the specified type and the "Zonal" column equals the specified zonal
-    $selectedRows = $data | Where-Object { $_.Type -eq $Type -and $_.Zonal -eq $Zonal }
+    $selectedRows = $data | Where-Object { $_.Type -eq $Type -and $_.Resilience -eq $Resilience }
 
     # Select the RTO, RPO, and SLA columns for the selected rows
     $selectedColumns = $selectedRows | Select-Object RTO, RPO, SLA

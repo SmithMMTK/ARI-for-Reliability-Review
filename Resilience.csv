@@ -1,0 +1,8 @@
+Type,Resilience,RPO,RTO,SLA
+AKS,Zonal,N/A,Near zero,99.95%
+AKS,Single,N/A,120 minutes,99.9%
+VMSS,Zonal,N/A,Near zero,99.99%
+VM-Premium,Single,Loss,120 minutes,99.9%
+VM-StandardSSD,Single,Loss,60 minutes,99.5%
+VM-Standard,Single,Loss,60 minutes,95%
+VM-Other,Single,N/A,N/A,N/A

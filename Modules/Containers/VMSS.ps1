@@ -64,21 +64,31 @@ If ($Task -eq 'Processing')
                  . ./Get-ServiceDetails.ps1 
 
                  $jsonOutput = if ($1.zones) {
-                    Get-ServiceDetails -Type 'microsoft.compute/virtualmachinescalesets' -Zonal 'Enable'
-                    } else {
-                    Get-ServiceDetails -Type 'microsoft.compute/virtualmachinescalesets' -Zonal 'Disable'
-                    }
-                
-                
+                    Get-ServiceDetails -Type 'VMSS' -Resilience 'Zonal'
+                    } 
+                    elseif ($1.DiskStorageAccountType -eq 'Premium_LRS') 
+                        {
+                            Get-ServiceDetails -Type 'VM-Premium' -Resilience 'Single'
+                        }
+                        elseif ($1.DiskStorageAccountType -eq 'StandardSSD_LRS') 
+                        {
+                            Get-ServiceDetails -Type 'VM-StandardSSD' -Resilience 'Single'
+                        }
+                        elseif ($1.DiskStorageAccountType -eq 'Standard_LRS') 
+                        {
+                            Get-ServiceDetails -Type 'VM-Standard' -Resilience 'Single'
+                        }
+                        else
+                        {
+                            Get-ServiceDetails -Type 'VM-Other' -Resilience 'Single'
+                        }
 
                 # Get RTO information from $jsonOutput field RTO
                 $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
-
-             
+            
                 # Get RPO information from $jsonOutput field RPO
                 $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
                 
-
                 # Get SLA information from $jsonOutput field SLA
                 $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
                 
@@ -91,9 +101,9 @@ If ($Task -eq 'Processing')
                         'AKS / SFC'                     = $Related;
                         'Name'                          = $1.NAME;
                         'Location'                      = $1.LOCATION;
-                        'RTO'                        = [string]$RTO;
-                        'RPO'                        = [string]$RPO;
-                        'SLA'                        = [string]$SLA;
+                        'RTO'                           = [string]$RTO;
+                        'RPO'                           = [string]$RPO;
+                        'SLA'                           = [string]$SLA;
                         'Zones'                         = [string]$1.zones;
                         'SKU Tier'                      = $1.sku.tier;
                         'Fault Domain'                  = $data.platformFaultDomainCount;
