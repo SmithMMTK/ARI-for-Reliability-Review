@@ -39,37 +39,29 @@ If ($Task -eq 'Processing') {
                 $data = $1.PROPERTIES
                 $sku = $1.SKU
 
+
+                # Load Get-Service Detail Module
+                . ./Get-ServiceDetails.ps1    
+
+                
                 if ($data.highAvailability.mode -eq "ZoneRedundant") {
                     $HA = "1, 2, 3"
-                } else {
+                    $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQLFlex'  -Resilience 'Zonal'
+
+                } 
+                else 
+                {
                     $HA = ""
+
+                     # Check geoRedundantBackup from $data.backup that Enabled or Disabled then assign True / False to $geoBackup
+                        if ($data.backup.geoRedundantBackup -eq "enabled") {                           
+                            $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQLFlex-Geo'  -Resilience 'Single'
+                        } else {                           
+                            $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQLFlex'  -Resilience 'Single'
+                        }                    
                 }
 
-                 # Load Get-Service Detail Module
-                 . ./Get-ServiceDetails.ps1    
-
-                Write-Output $data.backup.geoRedundantBackup| Out-File -Append -FilePath ./sys.log
-
-                # Check geoRedundantBackup from $data.backup that Enabled or Disabled then assign True / False to $geoBackup
-                if ($data.backup.geoRedundantBackup -eq "enabled") {
-                    $geoBackup = $true
-                } else {
-                    $geoBackup = $false
-                }
-
-                
-
-
-                # If $geoBackup is true send to Get-ServiceDetails module the value "GeoRedundant" else send "Local"
-                if ($geoBackup) {
-                    Write-Output "True" | Out-File -Append -FilePath ./sys.log
-                    $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQLFlex-Geo'  -Resilience 'Single'
-                } else {
-                    Write-Output "False" | Out-File -Append -FilePath ./sys.log
-                }
-
-                    Write-Output $jsonOutput | Out-File -Append -FilePath ./sys.log
-                
+                                    
                 # Get RTO information from $jsonOutput field RTO
                 $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
 

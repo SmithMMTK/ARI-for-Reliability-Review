@@ -13,4 +13,5 @@ AzureSQL-LRS,Single, 5 minutes, 2 hours, 99.99%
 AzureSQL-GRS,Single,5 minutes (LRS) and 1 hour (GRS),2 hours (LRS) and 12 hours (GRS),99.99%
 AzureSQL-Other,Single,N/A,N/A,N/A
 AzurePostgreSQLFlex,Zonal,0,120 seconds,99.99%
-AzurePostgreSQLFlex-Geo,Single,GRS,GRS,GRS
+AzurePostgreSQLFlex,Single,5 mintues (LRS),Varies,99.99%
+AzurePostgreSQLFlex-Geo,Single,5 minutes (LRS) and 1 hour (GRS),Varies,99.99$

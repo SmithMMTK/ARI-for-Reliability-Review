@@ -46,7 +46,6 @@ if ($Task -eq 'Processing') {
                 # Load Get-Service Detail Module
                 . ./Get-ServiceDetails.ps1                 
 
-                Write-Output $$1.StorageAccountType | Out-File -Append -FilePath ./sys.log
 
                 # If $data.zoneRedundant is not null then it is a zone redundant database so generate output string "1, 2, 3"
                 if ($data.zoneRedundant) 
@@ -61,12 +60,14 @@ if ($Task -eq 'Processing') {
                     {
                         $jsonOutput = Get-ServiceDetails -Type 'AzureSQL-LRS'  -Resilience 'Single'
                     } 
-                    elseif ($data.storageAccountType -eq 'GRS')
-                    }
-                    else
-                    {
-                        $jsonOutput = Get-ServiceDetails -Type 'AzureSQL-Other'  -Resilience 'Single'
-                    }
+                        elseif ($data.storageAccountType -eq 'GRS')
+                        {
+                            $jsonOutput = Get-ServiceDetails -Type 'AzureSQL-GRS'  -Resilience 'Single'
+                        }
+                        else
+                            {
+                                $jsonOutput = Get-ServiceDetails -Type 'AzureSQL-Other'  -Resilience 'Single'
+                            }
                 }
 
                 # Get RTO information from $jsonOutput field RTO

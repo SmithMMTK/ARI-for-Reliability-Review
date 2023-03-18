@@ -36,7 +36,7 @@ If ($Task -eq 'Processing') {
                 $ResUCount = 1
                 $sub1 = $SUB | Where-Object { $_.Id -eq $1.subscriptionId }
                 $data = $1.PROPERTIES
-                if ($1.zones) { $Zones = $1.zones } Else { $Zones = "Not Configured" }
+                if ($1.zones) { $Zones = $1.zones } Else { $Zones = "" }
                 $Threat = if($data.threatintelmode -eq 'deny'){'Alert and deny'}elseif($data.threatintelmode -eq 'alert'){'Alert only'}else{'Off'}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                 Foreach($2 in $data.ipConfigurations)
