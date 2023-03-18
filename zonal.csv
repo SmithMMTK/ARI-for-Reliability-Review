@@ -1,5 +1,5 @@
 Type,Zonal,RPO,RTO,SLA
-microsoft.containerservice/managedclusters,Enable,N/A,Near zeo,99.95%
+microsoft.containerservice/managedclusters,Enable,N/A,Near zero,99.95%
 microsoft.containerservice/managedclusters,Disable,N/A,120 minutes,99.9%
 microsoft.compute/virtualmachinescalesets,Enable,N/A,Near zero,99.99%
 microsoft.compute/virtualmachinescalesets,Disable,N/A,120 minutes,99.xx%
