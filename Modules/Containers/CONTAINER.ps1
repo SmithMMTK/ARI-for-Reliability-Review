@@ -41,6 +41,10 @@ If ($Task -eq 'Processing')
                 $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
                 $data = $1.PROPERTIES
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                
+                # Set Type value for combine tab
+                $azureServices = 'Azure Container Instances'
+
                 foreach ($2 in $data.containers) {
                         foreach ($Tag in $Tags) {
                             $obj = @{
@@ -48,6 +52,8 @@ If ($Task -eq 'Processing')
                                 'Subscription'        = $sub1.Name;
                                 'Resource Group'      = $1.RESOURCEGROUP;
                                 'Zones'               = $1.zones;
+                                'Resource Name'        = $1.NAME;
+                                'Azure Services'       = $azureServices;
                                 'Instance Name'       = $1.NAME;
                                 'Location'            = $1.LOCATION;
                                 'Instance OS Type'    = $data.osType;
@@ -116,6 +122,22 @@ Else
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'Containers' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -Style $Style
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+        
+        
 
     }
 }
