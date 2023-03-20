@@ -17,3 +17,5 @@ AzurePostgreSQLFlex,Single,5 mintues (LRS),Varies,99.99%
 AzurePostgreSQLFlex-Geo,Single,5 minutes (LRS) and 1 hour (GRS),Varies,99.99$
 AzurePostgreSQL,Single,5 mintues (LRS),Varies,99.99%
 AzurePostgreSQL-Geo,Single,5 mintues (LRS) and 1 hour (GR),Varies,99.99%
+AzureKeyVault,Global,Near zero,a few minutes,99.99%
+AzureKeyVault-Private,Global,Near zero,20 minutes,99.99%
