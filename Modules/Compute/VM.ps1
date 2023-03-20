@@ -138,6 +138,7 @@ If ($Task -eq 'Processing')
                                 'Subscription'                  = $sub1.Name;
                                 'Resource Group'                = $1.RESOURCEGROUP;
                                 'VM Name'                       = $1.NAME;
+                                'Resource Name'                 = $1.NAME;
                                 'Location'                      = $1.LOCATION;
                                 'Zone'                          = [string]$1.ZONES;
                                 'RTO'                           = [string]$RTO;
@@ -263,12 +264,29 @@ else
                     $Exc.Add('Tag Name')
                     $Exc.Add('Tag Value') 
                 }
-    
+               
                 $ExcelVar = $SmaResources.VM
-                            
+
+                ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+                $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+                $ExcCombine.Add('Subscription')
+                $ExcCombine.Add('Resource Group')
+                $ExcCombine.Add('Resource Name')
+                $ExcCombine.Add('Zone')
+                $Exc.Add('Location')
+
+               # This block is original code, it work             
+               $ExcelVar | 
+               ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
+               Export-Excel -Path $File -WorksheetName 'Virtual Machines' -TableName $TableName -MaxAutoSizeRows 100 -TableStyle $tableStyle -ConditionalText $cond -Style $Style, $StyleExt
+
+                
+               # # Export-Excel with No Table in the worksheet ResourcesCombine
                 $ExcelVar | 
-                ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
-                Export-Excel -Path $File -WorksheetName 'Virtual Machines' -TableName $TableName -MaxAutoSizeRows 100 -TableStyle $tableStyle -ConditionalText $cond -Style $Style, $StyleExt
+                ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+                Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt -Append
+
+
 
                 $excel = Open-ExcelPackage -Path $File -KillExcel
     
