@@ -138,9 +138,6 @@ Else {
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'MySQL' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
 
-    }
-    <######## Insert Column comments and documentations here following this model #########>
-
         ## Export to Combine Tab
 
         ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
@@ -156,4 +153,9 @@ Else {
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
         Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+
+
+    }
+    <######## Insert Column comments and documentations here following this model #########>
+
 }

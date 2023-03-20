@@ -71,6 +71,8 @@ If ($Task -eq 'Processing') {
                 # Get SLA information from $jsonOutput field SLA
                 $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
+                # Set Type value for combine tab
+                $azureServices = 'Azure Database for PostgreSQL Flex'
 
                 if(!$data.privateEndpointConnections){$PVTENDP = $false}else{$PVTENDP = $data.privateEndpointConnections.Id.split("/")[8]}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
@@ -82,7 +84,9 @@ If ($Task -eq 'Processing') {
                             'Name'                      = $1.NAME;
                             'RTO'                           = [string]$RTO;
                             'RPO'                           = [string]$RPO;
-                            'SLA'                           = [string]$SLA;  
+                            'SLA'                           = [string]$SLA;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;  
                             'Location'                  = $1.LOCATION;
                             'Zones'                     = $HA;
                             'SKU'                       = $sku.name;
@@ -175,6 +179,21 @@ Else {
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'PostgreSQLFlex' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
 
+         ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
     }
     <######## Insert Column comments and documentations here following this model #########>
 }
