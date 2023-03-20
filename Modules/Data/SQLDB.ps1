@@ -79,6 +79,9 @@ if ($Task -eq 'Processing') {
                 # Get SLA information from $jsonOutput field SLA
                 $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
+                # Set Type value for combine tab
+                $azureServices = 'Azure SQL Database'
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                         = $1.id;
@@ -87,6 +90,7 @@ if ($Task -eq 'Processing') {
                             'Name'                       = $1.NAME;
                             'Resource Name'              = $1.NAME;
                             'Location'                   = $1.LOCATION;
+                            'Azure Services'             = $azureServices;
                             'RTO'                           = [string]$RTO;
                             'RPO'                           = [string]$RPO;
                             'SLA'                           = [string]$SLA;                            
@@ -97,7 +101,7 @@ if ($Task -eq 'Processing') {
                             'DTU Capacity'               = $data.currentSku.capacity;
                             'DTU Tier'                   = $data.requestedServiceObjectiveName;
                             #'Zone Redundant'             = $data.zoneRedundant;
-                            'Zone Redundant'             = $zonal;
+                            'Zone'             = $zonal;
                             'Catalog Collation'          = $data.catalogCollation;
                             'Read Replica Count'         = $data.readReplicaCount;
                             'Data Max Size (GB)'         = (($data.maxSizeBytes / 1024) / 1024) / 1024;
@@ -122,7 +126,7 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Zone Redundant')
+        $Exc.Add('Zone')
         $Exc.Add('RTO')
         $Exc.Add('RPO')
         $Exc.Add("SLA")
@@ -153,9 +157,10 @@ else {
         $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
         $ExcCombine.Add('Subscription')
         $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
         $ExcCombine.Add('Resource Name')
         $ExcCombine.Add('Zone')
-        $Exc.Add('Location')
+        $ExcCombine.Add('Location')
 
         # # Export-Excel with No Table in the worksheet ResourcesCombine
         $ExcelVar | 

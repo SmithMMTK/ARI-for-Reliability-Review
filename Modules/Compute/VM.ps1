@@ -130,6 +130,8 @@ If ($Task -eq 'Processing')
                         # Get SLA information from $jsonOutput field SLA
                         $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
+                        # Set Type value for combine tab
+                        $azureServices = 'Azure Virtual Machines'
 
                         foreach ($Tag in $Tags) 
                             {
@@ -144,6 +146,7 @@ If ($Task -eq 'Processing')
                                 'RTO'                           = [string]$RTO;
                                 'RPO'                           = [string]$RPO;
                                 'SLA'                           = [string]$SLA;
+                                'Azure Services'                = $azureServices;
                                 'Availability Set'              = $AVSET;
                                 'VM Size'                       = $data.hardwareProfile.vmSize;
                                 'Image Reference'               = $data.storageProfile.imageReference.publisher;
@@ -267,21 +270,22 @@ else
                
                 $ExcelVar = $SmaResources.VM
 
-                ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
-                $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
-                $ExcCombine.Add('Subscription')
-                $ExcCombine.Add('Resource Group')
-                $ExcCombine.Add('Resource Name')
-                $ExcCombine.Add('Zone')
-                $Exc.Add('Location')
-
-               # This block is original code, it work             
+                # This block is original code, it work             
                $ExcelVar | 
                ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
                Export-Excel -Path $File -WorksheetName 'Virtual Machines' -TableName $TableName -MaxAutoSizeRows 100 -TableStyle $tableStyle -ConditionalText $cond -Style $Style, $StyleExt
 
+            
+                ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+                $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+                $ExcCombine.Add('Subscription')
+                $ExcCombine.Add('Resource Group')
+                $ExcCombine.Add('Azure Services')
+                $ExcCombine.Add('Resource Name')
+                $ExcCombine.Add('Zone')
+                $ExcCombine.Add('Location')
                 
-               # # Export-Excel with No Table in the worksheet ResourcesCombine
+                # Export-Excel with No Table in the worksheet ResourcesCombine
                 $ExcelVar | 
                 ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
                 Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt -Append
