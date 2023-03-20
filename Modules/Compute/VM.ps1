@@ -133,6 +133,7 @@ If ($Task -eq 'Processing')
                         # Set Type value for combine tab
                         $azureServices = 'Azure Virtual Machines'
 
+
                         foreach ($Tag in $Tags) 
                             {
                                 $obj = @{
@@ -142,7 +143,7 @@ If ($Task -eq 'Processing')
                                 'VM Name'                       = $1.NAME;
                                 'Resource Name'                 = $1.NAME;
                                 'Location'                      = $1.LOCATION;
-                                'Zone'                          = [string]$1.ZONES;
+                                'Zones'                          = [string]$1.ZONES;
                                 'RTO'                           = [string]$RTO;
                                 'RPO'                           = [string]$RPO;
                                 'SLA'                           = [string]$SLA;
@@ -226,7 +227,7 @@ else
                 $Exc.Add('Subscription')
                 $Exc.Add('Resource Group')
                 $Exc.Add('VM Name')
-                $Exc.Add('Zone')
+                $Exc.Add('Zones')
                 $Exc.Add('RTO')
                 $Exc.Add('RPO')
                 $Exc.Add("SLA")
@@ -282,7 +283,7 @@ else
                 $ExcCombine.Add('Resource Group')
                 $ExcCombine.Add('Azure Services')
                 $ExcCombine.Add('Resource Name')
-                $ExcCombine.Add('Zone')
+                $ExcCombine.Add('Zones')
                 $ExcCombine.Add('Location')
                 
                 # Export-Excel with No Table in the worksheet ResourcesCombine

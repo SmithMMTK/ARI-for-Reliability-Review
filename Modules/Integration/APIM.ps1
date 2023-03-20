@@ -41,14 +41,20 @@ If ($Task -eq 'Processing')
                 $data = $1.PROPERTIES
                 if ($data.virtualNetworkType -eq 'None') { $NetType = '' } else { $NetType = [string]$data.virtualNetworkConfiguration.subnetResourceId.split("/")[8] }
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+
+                 # Set Type value for combine tab
+                 $azureServices = 'Azure API Management'
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                   = $1.id;
                             'Subscription'         = $sub1.Name;
                             'Resource Group'       = $1.RESOURCEGROUP;
                             'Name'                 = $1.NAME;
+                            'Resource Name'        = $1.NAME;
+                            'Azure Services'        = $azureServices;
                             'Location'             = $1.LOCATION;
-                            'Zones'                = [string]$1.zones;
+                            'Zone'                = [string]$1.zones;
                             'SKU'                  = $1.sku.name;
                             'Gateway URL'          = $data.gatewayUrl;
                             'Virtual Network Type' = $data.virtualNetworkType;
@@ -117,6 +123,22 @@ Else
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'APIM' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
+
+                ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+                $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+                $ExcCombine.Add('Subscription')
+                $ExcCombine.Add('Resource Group')
+                $ExcCombine.Add('Azure Services')
+                $ExcCombine.Add('Resource Name')
+                $ExcCombine.Add('Zones')
+                $ExcCombine.Add('Location')
+        
+                # # Export-Excel with No Table in the worksheet ResourcesCombine
+                $ExcelVar | 
+                ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+                Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+        
+        
 
         <######## Insert Column comments and documentations here following this model #########>
 

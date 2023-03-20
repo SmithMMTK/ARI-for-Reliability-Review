@@ -89,8 +89,8 @@ if ($Task -eq 'Processing') {
                             'Resource Group'             = $1.RESOURCEGROUP;
                             'Name'                       = $1.NAME;
                             'Resource Name'              = $1.NAME;
-                            'Location'                   = $1.LOCATION;
                             'Azure Services'             = $azureServices;
+                            'Location'                   = $1.LOCATION;
                             'RTO'                           = [string]$RTO;
                             'RPO'                           = [string]$RPO;
                             'SLA'                           = [string]$SLA;                            
@@ -101,7 +101,7 @@ if ($Task -eq 'Processing') {
                             'DTU Capacity'               = $data.currentSku.capacity;
                             'DTU Tier'                   = $data.requestedServiceObjectiveName;
                             #'Zone Redundant'             = $data.zoneRedundant;
-                            'Zone'             = $zonal;
+                            'Zones'             = $zonal;
                             'Catalog Collation'          = $data.catalogCollation;
                             'Read Replica Count'         = $data.readReplicaCount;
                             'Data Max Size (GB)'         = (($data.maxSizeBytes / 1024) / 1024) / 1024;
@@ -126,7 +126,7 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Zone')
+        $Exc.Add('Zones')
         $Exc.Add('RTO')
         $Exc.Add('RPO')
         $Exc.Add("SLA")
@@ -153,13 +153,15 @@ else {
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'SQL DBs' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -Style $Style
 
+        ## Export to Combine Tab
+
         ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
         $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
         $ExcCombine.Add('Subscription')
         $ExcCombine.Add('Resource Group')
         $ExcCombine.Add('Azure Services')
         $ExcCombine.Add('Resource Name')
-        $ExcCombine.Add('Zone')
+        $ExcCombine.Add('Zones')
         $ExcCombine.Add('Location')
 
         # # Export-Excel with No Table in the worksheet ResourcesCombine

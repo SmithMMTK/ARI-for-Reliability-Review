@@ -77,7 +77,56 @@ If ($Task -eq 'Processing')
                 # Get SLA information from $jsonOutput field SLA
                 $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
+                # Set Type value for combine tab
+                $azureServices = 'Azure App Services'
 
+                foreach ($Tag in $Tags) {
+                    $obj = @{
+                        'ID'                            = $1.id;
+                        'Subscription'                  = $sub1.Name;
+                        'Resource Group'                = $1.RESOURCEGROUP;
+                        'Name'                          = $1.NAME;
+                        'Zones'                = $serverFarmZoneRedundant;
+                        'Resource Name'              = $1.NAME;
+                        'Azure Services'             = $azureServices;
+                        'RTO'                           = [string]$RTO;
+                        'RPO'                           = [string]$RPO;
+                        'SLA'                           = [string]$SLA;
+                        'App Type'                      = $1.KIND;
+                        'serverFarmId'                  = $serverFarmId;
+                        'Location'                      = $1.LOCATION;
+                        'Enabled'                       = $data.enabled;
+                        'State'                         = $data.state;
+                        'SKU'                           = $data.sku;
+                        'Client Cert Enabled'           = $data.clientCertEnabled;
+                        'Client Cert Mode'              = $data.clientCertMode;
+                        'Content Availability State'    = $data.contentAvailabilityState;
+                        'Runtime Availability State'    = $data.runtimeAvailabilityState;
+                        'HTTPS Only'                    = $data.httpsOnly;
+                        'FTPS Only'                     = $FTPS;
+                        'Possible Inbound IP Addresses' = $data.possibleInboundIpAddresses;
+                        'Repository Site Name'          = $data.repositorySiteName;
+                        'Managed Identity'              = $MGMID;
+                        'Availability State'            = $data.availabilityState;
+                        #'HostNames'                     = $2.Name;
+                        #'HostName Type'                 = $2.hostType;
+                        'Stack'                         = $data.SiteConfig.linuxFxVersion;
+                        'Virtual Network'               = $VNET;
+                        'Subnet'                        = $SUBNET;
+                        #'SSL State'                     = $2.sslState;
+                        'Default Hostname'              = $data.defaultHostName;                        
+                        'Container Size'                = $data.containerSize;
+                        'Admin Enabled'                 = $data.adminEnabled;                        
+                        'FTPs Host Name'                = $data.ftpsHostName;                        
+                        'Resource U'                    = $ResUCount;
+                        'Tag Name'                      = [string]$Tag.Name;
+                        'Tag Value'                     = [string]$Tag.Value
+                    }
+                    $tmp += $obj
+                    if ($ResUCount -eq 1) { $ResUCount = 0 } 
+                } 
+
+<# Remove HostNameSslStates from $data object
                 foreach ($2 in $data.hostNameSslStates) {
                         foreach ($Tag in $Tags) {
                             $obj = @{
@@ -123,6 +172,7 @@ If ($Task -eq 'Processing')
                             if ($ResUCount -eq 1) { $ResUCount = 0 } 
                         }                   
                 }
+#>
             }
             $tmp
         }
@@ -159,7 +209,7 @@ Else
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Zone Redundant')
+        $Exc.Add('Zones')
         $Exc.Add('RTO')
         $Exc.Add('RPO')
         $Exc.Add("SLA")
@@ -200,6 +250,23 @@ Else
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'App Services' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+
 
     }
 }

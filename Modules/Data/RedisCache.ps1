@@ -43,14 +43,20 @@ If ($Task -eq 'Processing') {
                 if ($1.ZONES) { $Zones = $1.ZONES }else { $Zones = '' }
                 if ([string]::IsNullOrEmpty($data.minimumTlsVersion)){$MinTLS = 'Default'}Else{$MinTLS = "TLS $($data.minimumTlsVersion)"}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
-                    foreach ($Tag in $Tags) {
+                
+                # Set Type value for combine tab
+                $azureServices = 'Azure Cache for Redis'
+                
+                foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                    = $1.id;
                             'Subscription'          = $sub1.Name;
-                            'ResourceGroup'         = $1.RESOURCEGROUP;
+                            'Resource Group'         = $1.RESOURCEGROUP;
                             'Name'                  = $1.NAME;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'Location'              = $1.LOCATION;
-                            'Zone'                  = [string]$Zones;
+                            'Zones'                  = [string]$Zones;
                             'Version'               = $data.redisVersion;
                             'Public Network Access' = $data.publicNetworkAccess;
                             'FQDN'                  = $data.hostName;
@@ -130,6 +136,23 @@ Else {
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'Redis Cache' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+
     }
     <######## Insert Column comments and documentations here following this model #########>
 }
