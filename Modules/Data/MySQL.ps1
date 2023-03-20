@@ -39,6 +39,10 @@ If ($Task -eq 'Processing') {
                 $sku = $1.SKU
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                 $Zonal = ""
+
+                 # Set Type value for combine tab
+                 $azureServices = 'Azure Database for MySQL'
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                        = $1.id;
@@ -46,6 +50,8 @@ If ($Task -eq 'Processing') {
                             'Resource Group'            = $1.RESOURCEGROUP;
                             'Name'                      = $1.NAME;
                             'Zones'                     = $Zonal;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'Location'                  = $1.LOCATION;
                             'SKU'                       = $sku.name;
                             'SKU Family'                = $sku.family;
@@ -134,4 +140,20 @@ Else {
 
     }
     <######## Insert Column comments and documentations here following this model #########>
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
 }
