@@ -15,3 +15,5 @@ AzureSQL-Other,Single,N/A,N/A,N/A
 AzurePostgreSQLFlex,Zonal,0,120 seconds,99.99%
 AzurePostgreSQLFlex,Single,5 mintues (LRS),Varies,99.99%
 AzurePostgreSQLFlex-Geo,Single,5 minutes (LRS) and 1 hour (GRS),Varies,99.99$
+AzurePostgreSQL,Single,5 mintues (LRS),Varies,99.99%
+AzurePostgreSQL-Geo,Single,5 mintues (LRS) and 1 hour (GR),Varies,99.99%

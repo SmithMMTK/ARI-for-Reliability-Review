@@ -42,7 +42,25 @@ If ($Task -eq 'Processing') {
 
                 $Zones = if($data.highAvailability.mode -eq 'ZoneRedundant') {'1, 2, 3'} else {''}
 
+                # Load Get-Service Detail Module
+                . ./Get-ServiceDetails.ps1    
+
+                # Due PostgreSQL Single Server is no zonal configuration, let check if data.storageProfile.geoRedundantBackup is enabled or disabled
+                # Check geoRedundantBackup from $data.backup that Enabled or Disabled then assign True / False to $geoBackup
+                if ($data.StorageProfile.geoRedundantBackup -eq "enabled") {
+                    $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQL-Geo'  -Resilience 'Single'
+                } else {
+                    $jsonOutput = Get-ServiceDetails -Type 'AzurePostgreSQL'  -Resilience 'Single'
+                }
+
+                # Get RTO information from $jsonOutput field RTO
+                $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+
+                # Get RPO information from $jsonOutput field RPO
+                $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
                 
+                # Get SLA information from $jsonOutput field SLA
+                $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
          
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                     foreach ($Tag in $Tags) {
@@ -52,6 +70,9 @@ If ($Task -eq 'Processing') {
                             'Resource Group'            = $1.RESOURCEGROUP;
                             'Name'                      = $1.NAME;
                             'Location'                  = $1.LOCATION;
+                            'RTO'                           = [string]$RTO;
+                            'RPO'                           = [string]$RPO;
+                            'SLA'                           = [string]$SLA;  
                             'Zones'                     = $Zones;
                             'SKU'                       = $sku.name;
                             'SKU Family'                = $sku.family;
@@ -107,6 +128,9 @@ Else {
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
         $Exc.Add('Zones')
+        $Exc.Add('RTO')
+        $Exc.Add('RPO')
+        $Exc.Add("SLA")
         $Exc.Add('Location')
         $Exc.Add('SKU')
         $Exc.Add('SKU Family')
