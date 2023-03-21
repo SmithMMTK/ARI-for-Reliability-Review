@@ -66,6 +66,9 @@ If ($Task -eq 'Processing')
                     # Get SLA information from $jsonOutput field SLA
                     $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
+                    # Set Type value for combine tab
+                    $azureServices = 'Azure Kubernetes Service'
+
                         foreach ($Tag in $Tags) {
                             $obj = @{
                                 'ID'                         = $1.id;
@@ -73,6 +76,8 @@ If ($Task -eq 'Processing')
                                 'Resource Group'             = $1.RESOURCEGROUP;
                                 'Clusters'                   = $1.NAME;
                                 'Location'                   = $1.LOCATION;
+                                'Resource Name'              = $1.NAME;
+                                'Azure Services'             = $azureServices;
                                 'RTO'                        = [string]$RTO;
                                 'RPO'                        = [string]$RPO;
                                 'SLA'                        = [string]$SLA;
@@ -192,6 +197,23 @@ Else
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'AKS' -AutoSize -TableName $TableName -MaxAutoSizeRows 50 -TableStyle $tableStyle -ConditionalText $cond -Numberformat '0' -Style $Style            
+
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
 
     }
 }
