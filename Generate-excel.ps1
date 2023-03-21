@@ -10,7 +10,9 @@ $File = "/Users/smithm/AzureResourceInventory/a mimo AzureResourceInventory_Repo
 $current_time = Get-Date
 $current_time_string = $current_time.ToString("yyyy-MM-dd HH:mm:ss")
 
-$NewFile = $File + $current_time_string +  ".xlsx"
+
+$NewFile = ($File + "_" + (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
+##$NewFile = $File + $current_time_string +  ".xlsx"
 
 $TableStyle = "Light20"
 
@@ -71,5 +73,3 @@ $Excel | ForEach-Object {
 
 $Style = New-ExcelStyle -HorizontalAlignment Left -Width 20 -NumberFormat 0
 $Excel | Export-Excel -Path $NewFile -WorksheetName "Combine" -Style $Style -TableStyle $TableStyle 
-
-
