@@ -1,9 +1,9 @@
 <#
 .Synopsis
-Inventory for Azure Data Factory
+Inventory for Azure Synapse Analytics
 
 .DESCRIPTION
-This script consolidates information for all microsoft.datafactory/factories resource provider in $Resources variable. 
+This script consolidates information for all microsoft.synapse/workspaces resource provider in $Resources variable. 
 Excel Sheet Name: COMBINE
 
 .Link
@@ -28,7 +28,7 @@ If ($Task -eq 'Processing')
 
     <######### Insert the resource extraction here ########>
 
-        $ADF = $Resources | Where-Object {($_.TYPE -eq 'microsoft.datafactory/factories') -or ($_.TYPE -eq 'microsoft.datafactory/datafactories')}
+        $ADF = $Resources | Where-Object {($_.TYPE -eq 'microsoft.synapse/workspaces')}
 
 
     <######### Insert the resource Process here ########>
@@ -44,7 +44,7 @@ If ($Task -eq 'Processing')
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                 
                 # Set Type value for combine tab
-                $azureServices = 'Azure Data Factory'
+                $azureServices = 'Azure Synapse Analytics - SQL Pool'
                         foreach ($Tag in $Tags) {
                             $obj = @{
                                 'ID'                  = $1.id;
@@ -67,18 +67,18 @@ If ($Task -eq 'Processing')
 
 Else
 {
-    if ($SmaResources.DataFactory) {
+    if ($SmaResources.Synapse) {
 
-        $TableName = ('DataFactoryTable_'+($SmaResources.DataFactory.id | Select-Object -Unique).count)
+        $TableName = ('SynapseTable_'+($SmaResources.Synapse.id | Select-Object -Unique).count)
         $Style = New-ExcelStyle -HorizontalAlignment Center -AutoSize -NumberFormat 0
         
 
 
-        $ExcelVar = $SmaResources.DataFactory 
+        $ExcelVar = $SmaResources.Synapse 
 
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
-        Export-Excel -Path $File -WorksheetName 'Data Factory' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -Style $Style
+        Export-Excel -Path $File -WorksheetName 'Synapse' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -Style $Style
 
         ## Export to Combine Tab
 
