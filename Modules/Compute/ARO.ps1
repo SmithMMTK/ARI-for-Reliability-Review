@@ -43,6 +43,9 @@ If ($Task -eq 'Processing') {
                 # Add ZoneRedundant "1, 2, 3" due it required by default
                 $zones = "1, 2, 3"
 
+                # Set Type value for combine tab
+                $azureServices = 'Azure Red Hat OpenShift'
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                   = $1.id;
@@ -51,6 +54,8 @@ If ($Task -eq 'Processing') {
                             'Zones'                = $zones;
                             'Clusters'             = $1.NAME;
                             'Location'             = $1.LOCATION;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'ARO Version'          = $data.clusterProfile.version;
                             'ARO Domain'           = $data.clusterProfile.domain;
                             'Outbound Type'        = $data.networkProfile.outboundType;
@@ -131,5 +136,21 @@ Else {
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'ARO' -AutoSize -TableName $TableName -MaxAutoSizeRows 100 -TableStyle $tableStyle -Numberformat '0' -Style $Style
     
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
     }
 }
