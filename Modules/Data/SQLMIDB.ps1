@@ -44,6 +44,9 @@ if ($Task -eq 'Processing') {
                 if ($data.zoneRedundant) {
                     $zonal = "1, 2, 3"
                 } else { $zonal = ""}
+
+                # Set Type value for combine tab
+                $azureServices = 'Azure SQL Managed Instance'
                 
                 foreach ($pvtep in $pvteps) {
                     foreach ($Tag in $Tags) {
@@ -52,6 +55,8 @@ if ($Task -eq 'Processing') {
                             'Subscription'          = $sub1.Name;
                             'MI parent'        = $1.id.split("/")[8];
                             'Name'                  = $1.NAME;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'Collation'              = $data.collation;
                             'CreationDate'               = $data.creationDate;
                             'DefaultSecondaryLocation'               = $data.defaultSecondaryLocation;
@@ -100,6 +105,24 @@ else {
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'SQL MI DBs' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
+
+
+         ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+
 
     }
 }
