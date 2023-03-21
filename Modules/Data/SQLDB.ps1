@@ -169,6 +169,7 @@ else {
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
         Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
 
-
+        
+        
     }
 }

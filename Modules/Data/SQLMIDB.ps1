@@ -53,6 +53,7 @@ if ($Task -eq 'Processing') {
                         $obj = @{
                             'ID'                    = $1.id;
                             'Subscription'          = $sub1.Name;
+                            'Resource Group'             = $1.RESOURCEGROUP;
                             'MI parent'        = $1.id.split("/")[8];
                             'Name'                  = $1.NAME;
                             'Resource Name'              = $1.NAME;
@@ -87,6 +88,7 @@ else {
 
         $Exc = New-Object System.Collections.Generic.List[System.Object]
         $Exc.Add('Subscription')
+        $Exc.Add('Resource Group')
         $Exc.Add('MI parent')
         $Exc.Add('Name')
         $Exc.Add('Zones')
