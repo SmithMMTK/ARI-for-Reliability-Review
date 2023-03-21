@@ -79,7 +79,11 @@ If ($Task -eq 'Processing')
 
                 # Set Type value for combine tab
                 # Check $1.KIND if -like '*functionapp*' then set $azureServices = 'Azure Functions' else set $azureServices = 'Azure App Services'
-                if($1.KIND -like '*functionapp*')
+                if($1.KIND -like '*functionapp,workflowapp*')
+                {
+                    $azureServices = 'Azure Logic Apps'
+                }
+                elseif($1.KIND -like '*functionapp*')
                 {
                     $azureServices = 'Azure Functions'
                 }
