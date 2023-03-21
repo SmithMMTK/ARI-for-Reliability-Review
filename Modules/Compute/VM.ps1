@@ -38,157 +38,167 @@ If ($Task -eq 'Processing')
             foreach ($1 in $vm) 
                 {
 
-                    $ResUCount = 1
-                    $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
-                    $data = $1.PROPERTIES 
-                    $AVSET = ''
-                    $dataSize = ''
-                    $StorAcc = ''
-                    $UpdateMgmt = if ($null -eq $data.osProfile.LinuxConfiguration.patchSettings.patchMode) { $data.osProfile.WindowsConfiguration.patchSettings.patchMode } else { $data.osProfile.LinuxConfiguration.patchSettings.patchMode }
-
-                    $ext = @()
-                    $AzDiag = ''
-                    $Azinsights = ''
-                    $Lic = if($data.licensetype){$data.licensetype}else{'None'}
-                    $ext = ($vmexp | Where-Object { ($_.id -split "/")[8] -eq $1.name }).properties.Publisher
-                    if ($null -ne $ext) 
-                        {
-                            $ext = foreach ($ex in $ext) 
-                                {
-                                    if ($ex | Where-Object { $_ -eq 'Microsoft.Azure.Performance.Diagnostics' }) { $AzDiag = $true }
-                                    if ($ex | Where-Object { $_ -eq 'Microsoft.EnterpriseCloud.Monitoring' }) { $Azinsights = $true }
-                                    $ex + ', '
-                                }
-                            $ext = [string]$ext
-                            $ext = $ext.Substring(0, $ext.Length - 2)
-                        }
-
-                    if ($null -ne $data.availabilitySet) { $AVSET = 'True' }else { $AVSET = 'False' }
-                    if ($data.diagnosticsProfile.bootDiagnostics.enabled -eq $true) { $bootdg = $true }else { $bootdg = $false }
-                    if($data.storageProfile.osDisk.managedDisk.id) 
-                        {
-                            $OSDisk = ($disk | Where-Object {$_.id -eq $data.storageProfile.osDisk.managedDisk.id} | Select-Object -Unique).sku.name
-                            $OSDiskSize = ($disk | Where-Object {$_.id -eq $data.storageProfile.osDisk.managedDisk.id} | Select-Object -Unique).Properties.diskSizeGB
-                        }
+                    # If $1.RESOURCEGROUP not contain word "databricks-rg"
+                    if ($1.RESOURCEGROUP -like '*databricks-rg*') 
+                    {
+                        ## Ignore Databricks managed VMs
+                    }
                     else
-                        {
-                            $OSDisk = if($data.storageProfile.osDisk.vhd.uri){'Custom VHD'}else{''}
-                            $OSDiskSize = $data.storageProfile.osDisk.diskSizeGB
-                        }
-                    $StorAcc = if ($data.storageProfile.dataDisks.managedDisk.id.count -ge 2) 
-                                { 
-                                    ($data.storageProfile.dataDisks.managedDisk.id.count.ToString() + ' Disks found.') 
-                                }
-                                else 
-                                { 
-                                    ($disk | Where-Object {$_.id -eq $data.storageProfile.dataDisks.managedDisk.id} | Select-Object -Unique).sku.name
-                                }
-                    $dataSize = if ($data.storageProfile.dataDisks.managedDisk.storageAccountType.count -ge 2) 
-                                { 
-                                    (($disk | Where-Object {$_.id -in $data.storageProfile.dataDisks.managedDisk.id}).properties.diskSizeGB | Measure-Object -Sum).Sum
-                                }
-                                else 
-                                { 
-                                    ($disk | Where-Object {$_.id -eq $data.storageProfile.dataDisks.managedDisk.id}).properties.diskSizeGB
-                                }                    
-                    $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
-                    $VMNICS = if(![string]::IsNullOrEmpty($data.networkProfile.networkInterfaces.id)){$data.networkProfile.networkInterfaces.id}else{'0'}
-                    foreach ($2 in $VMNICS) {
+                    {
+                  
+                        $ResUCount = 1
+                        $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
+                        $data = $1.PROPERTIES 
+                        $AVSET = ''
+                        $dataSize = ''
+                        $StorAcc = ''
+                        $UpdateMgmt = if ($null -eq $data.osProfile.LinuxConfiguration.patchSettings.patchMode) { $data.osProfile.WindowsConfiguration.patchSettings.patchMode } else { $data.osProfile.LinuxConfiguration.patchSettings.patchMode }
 
-                        $vmnic = $nic | Where-Object { $_.ID -eq $2 } | Select-Object -Unique
-                        $vmnsg = if($vmnic.properties.networkSecurityGroup.id){$vmnic.properties.networkSecurityGroup.id.split('/')[8]}else{'None'}
-                        $PIP = $vmnic.properties.ipConfigurations.properties.publicIPAddress.id.split('/')[8]
-                        $VNET = $vmnic.properties.ipConfigurations.properties.subnet.id.split('/')[8]
-                        $Subnet = $vmnic.properties.ipConfigurations.properties.subnet.id.split('/')[10]
-
-                        # Load Get-Service Detail Module
-                        . ./Get-ServiceDetails.ps1 
-
-                        $jsonOutput = if ($OSDisk -eq 'Premium_LRS')
-                        {
-                            Get-ServiceDetails -Type 'VM-Premium' -Resilience 'Single'
-                        }
-                        elseif ($OSDisk -eq 'StandardSSD_LRS')
-                        {
-                            Get-ServiceDetails -Type 'VM-StandardSSD' -Resilience 'Single'
-                        }
-                        elseif ($OSDisk -eq 'Standard_LRS')
-                        {
-                            Get-ServiceDetails -Type 'VM-Standard' -Resilience 'Single'
-                        }
-                        else
-                        {
-                            Get-ServiceDetails -Type 'VM-Other' -Resilience 'Single'
-                        }
-
-                        # Get RTO information from $jsonOutput field RTO
-                        $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
-                    
-                        # Get RPO information from $jsonOutput field RPO
-                        $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
-                        
-                        # Get SLA information from $jsonOutput field SLA
-                        $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
-
-                        # Set Type value for combine tab
-                        $azureServices = 'Azure Virtual Machines'
-
-
-                        foreach ($Tag in $Tags) 
+                        $ext = @()
+                        $AzDiag = ''
+                        $Azinsights = ''
+                        $Lic = if($data.licensetype){$data.licensetype}else{'None'}
+                        $ext = ($vmexp | Where-Object { ($_.id -split "/")[8] -eq $1.name }).properties.Publisher
+                        if ($null -ne $ext) 
                             {
-                                $obj = @{
-                                'ID'                            = $1.id;
-                                'Subscription'                  = $sub1.Name;
-                                'Resource Group'                = $1.RESOURCEGROUP;
-                                'VM Name'                       = $1.NAME;
-                                'Resource Name'                 = $1.NAME;
-                                'Location'                      = $1.LOCATION;
-                                'Zones'                          = [string]$1.ZONES;
-                                'RTO'                           = [string]$RTO;
-                                'RPO'                           = [string]$RPO;
-                                'SLA'                           = [string]$SLA;
-                                'Azure Services'                = $azureServices;
-                                'Availability Set'              = $AVSET;
-                                'VM Size'                       = $data.hardwareProfile.vmSize;
-                                'Image Reference'               = $data.storageProfile.imageReference.publisher;
-                                'Image Version'                 = $data.storageProfile.imageReference.exactVersion;
-                                'Hybrid Benefit'                = $Lic;
-                                'Admin Username'                = $data.osProfile.adminUsername;
-                                'OS Type'                       = $data.storageProfile.osDisk.osType;
-                                'OS Name'                       = $data.extended.instanceView.osname;
-                                'OS Version'                    = $data.extended.instanceView.osversion;
-                                'Update Management'             = $UpdateMgmt;
-                                'Boot Diagnostics'              = $bootdg;
-                                'Performance Agent'             = if ($azDiag -ne '') { $true }else { $false };
-                                'Azure Monitor'                 = if ($Azinsights -ne '') { $true }else { $false };
-                                'OS Disk Storage Type'          = $OSDisk;
-                                'OS Disk Size (GB)'             = $OSDiskSize;
-                                'Data Disk Storage Type'        = $StorAcc;
-                                'Data Disk Size (GB)'           = $dataSize;
-                                'Power State'                   = $data.extended.instanceView.powerState.displayStatus;
-                                'NIC Name'                      = [string]$vmnic.name;
-                                'NIC Type'                      = [string]$vmnic.properties.nicType;
-                                'DNS Servers'                   = [string]$vmnic.properties.dnsSettings.dnsServers;
-                                'Public IP'                     = $PIP;
-                                'Virtual Network'               = $VNET;
-                                'Subnet'                        = $Subnet;
-                                'NSG'                           = $vmnsg;
-                                'Accelerated Networking'        = [string]$vmnic.properties.enableAcceleratedNetworking;
-                                'IP Forwarding'                 = [string]$vmnic.properties.enableIPForwarding;
-                                'Private IP Address'            = $vmnic.properties.ipConfigurations.properties.privateIPAddress;
-                                'Private IP Allocation'         = $vmnic.properties.ipConfigurations.properties.privateIPAllocationMethod;
-                                'VM Extensions'                 = $ext;
-                                'Resource U'                    = $ResUCount;
-                                'Tag Name'                      = [string]$Tag.Name;
-                                'Tag Value'                     = [string]$Tag.Value
-                                }
-                                $tmp += $obj
-                                if ($ResUCount -eq 1) { $ResUCount = 0 } 
+                                $ext = foreach ($ex in $ext) 
+                                    {
+                                        if ($ex | Where-Object { $_ -eq 'Microsoft.Azure.Performance.Diagnostics' }) { $AzDiag = $true }
+                                        if ($ex | Where-Object { $_ -eq 'Microsoft.EnterpriseCloud.Monitoring' }) { $Azinsights = $true }
+                                        $ex + ', '
+                                    }
+                                $ext = [string]$ext
+                                $ext = $ext.Substring(0, $ext.Length - 2)
                             }
-                            Remove-Variable PIP, vmnic, vmnsg, VNET, Subnet                        
+
+                        if ($null -ne $data.availabilitySet) { $AVSET = 'True' }else { $AVSET = 'False' }
+                        if ($data.diagnosticsProfile.bootDiagnostics.enabled -eq $true) { $bootdg = $true }else { $bootdg = $false }
+                        if($data.storageProfile.osDisk.managedDisk.id) 
+                            {
+                                $OSDisk = ($disk | Where-Object {$_.id -eq $data.storageProfile.osDisk.managedDisk.id} | Select-Object -Unique).sku.name
+                                $OSDiskSize = ($disk | Where-Object {$_.id -eq $data.storageProfile.osDisk.managedDisk.id} | Select-Object -Unique).Properties.diskSizeGB
+                            }
+                        else
+                            {
+                                $OSDisk = if($data.storageProfile.osDisk.vhd.uri){'Custom VHD'}else{''}
+                                $OSDiskSize = $data.storageProfile.osDisk.diskSizeGB
+                            }
+                        $StorAcc = if ($data.storageProfile.dataDisks.managedDisk.id.count -ge 2) 
+                                    { 
+                                        ($data.storageProfile.dataDisks.managedDisk.id.count.ToString() + ' Disks found.') 
+                                    }
+                                    else 
+                                    { 
+                                        ($disk | Where-Object {$_.id -eq $data.storageProfile.dataDisks.managedDisk.id} | Select-Object -Unique).sku.name
+                                    }
+                        $dataSize = if ($data.storageProfile.dataDisks.managedDisk.storageAccountType.count -ge 2) 
+                                    { 
+                                        (($disk | Where-Object {$_.id -in $data.storageProfile.dataDisks.managedDisk.id}).properties.diskSizeGB | Measure-Object -Sum).Sum
+                                    }
+                                    else 
+                                    { 
+                                        ($disk | Where-Object {$_.id -eq $data.storageProfile.dataDisks.managedDisk.id}).properties.diskSizeGB
+                                    }                    
+                        $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                        $VMNICS = if(![string]::IsNullOrEmpty($data.networkProfile.networkInterfaces.id)){$data.networkProfile.networkInterfaces.id}else{'0'}
+                        foreach ($2 in $VMNICS) 
+                        {
+
+                            $vmnic = $nic | Where-Object { $_.ID -eq $2 } | Select-Object -Unique
+                            $vmnsg = if($vmnic.properties.networkSecurityGroup.id){$vmnic.properties.networkSecurityGroup.id.split('/')[8]}else{'None'}
+                            $PIP = $vmnic.properties.ipConfigurations.properties.publicIPAddress.id.split('/')[8]
+                            $VNET = $vmnic.properties.ipConfigurations.properties.subnet.id.split('/')[8]
+                            $Subnet = $vmnic.properties.ipConfigurations.properties.subnet.id.split('/')[10]
+
+                            # Load Get-Service Detail Module
+                            . ./Get-ServiceDetails.ps1 
+
+                            $jsonOutput = if ($OSDisk -eq 'Premium_LRS')
+                            {
+                                Get-ServiceDetails -Type 'VM-Premium' -Resilience 'Single'
+                            }
+                            elseif ($OSDisk -eq 'StandardSSD_LRS')
+                            {
+                                Get-ServiceDetails -Type 'VM-StandardSSD' -Resilience 'Single'
+                            }
+                            elseif ($OSDisk -eq 'Standard_LRS')
+                            {
+                                Get-ServiceDetails -Type 'VM-Standard' -Resilience 'Single'
+                            }
+                            else
+                            {
+                                Get-ServiceDetails -Type 'VM-Other' -Resilience 'Single'
+                            }
+
+                            # Get RTO information from $jsonOutput field RTO
+                            $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
+                        
+                            # Get RPO information from $jsonOutput field RPO
+                            $RPO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RPO
+                            
+                            # Get SLA information from $jsonOutput field SLA
+                            $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
+
+                            # Set Type value for combine tab
+                            $azureServices = 'Azure Virtual Machines'
+
+                                foreach ($Tag in $Tags) 
+                                    {
+                                        $obj = @{
+                                        'ID'                            = $1.id;
+                                        'Subscription'                  = $sub1.Name;
+                                        'Resource Group'                = $1.RESOURCEGROUP;
+                                        'VM Name'                       = $1.NAME;
+                                        'Resource Name'                 = $1.NAME;
+                                        'Location'                      = $1.LOCATION;
+                                        'Zones'                          = [string]$1.ZONES;
+                                        'RTO'                           = [string]$RTO;
+                                        'RPO'                           = [string]$RPO;
+                                        'SLA'                           = [string]$SLA;
+                                        'Azure Services'                = $azureServices;
+                                        'Availability Set'              = $AVSET;
+                                        'VM Size'                       = $data.hardwareProfile.vmSize;
+                                        'Image Reference'               = $data.storageProfile.imageReference.publisher;
+                                        'Image Version'                 = $data.storageProfile.imageReference.exactVersion;
+                                        'Hybrid Benefit'                = $Lic;
+                                        'Admin Username'                = $data.osProfile.adminUsername;
+                                        'OS Type'                       = $data.storageProfile.osDisk.osType;
+                                        'OS Name'                       = $data.extended.instanceView.osname;
+                                        'OS Version'                    = $data.extended.instanceView.osversion;
+                                        'Update Management'             = $UpdateMgmt;
+                                        'Boot Diagnostics'              = $bootdg;
+                                        'Performance Agent'             = if ($azDiag -ne '') { $true }else { $false };
+                                        'Azure Monitor'                 = if ($Azinsights -ne '') { $true }else { $false };
+                                        'OS Disk Storage Type'          = $OSDisk;
+                                        'OS Disk Size (GB)'             = $OSDiskSize;
+                                        'Data Disk Storage Type'        = $StorAcc;
+                                        'Data Disk Size (GB)'           = $dataSize;
+                                        'Power State'                   = $data.extended.instanceView.powerState.displayStatus;
+                                        'NIC Name'                      = [string]$vmnic.name;
+                                        'NIC Type'                      = [string]$vmnic.properties.nicType;
+                                        'DNS Servers'                   = [string]$vmnic.properties.dnsSettings.dnsServers;
+                                        'Public IP'                     = $PIP;
+                                        'Virtual Network'               = $VNET;
+                                        'Subnet'                        = $Subnet;
+                                        'NSG'                           = $vmnsg;
+                                        'Accelerated Networking'        = [string]$vmnic.properties.enableAcceleratedNetworking;
+                                        'IP Forwarding'                 = [string]$vmnic.properties.enableIPForwarding;
+                                        'Private IP Address'            = $vmnic.properties.ipConfigurations.properties.privateIPAddress;
+                                        'Private IP Allocation'         = $vmnic.properties.ipConfigurations.properties.privateIPAllocationMethod;
+                                        'VM Extensions'                 = $ext;
+                                        'Resource U'                    = $ResUCount;
+                                        'Tag Name'                      = [string]$Tag.Name;
+                                        'Tag Value'                     = [string]$Tag.Value
+                                        }
+                                        $tmp += $obj
+                                        if ($ResUCount -eq 1) { $ResUCount = 0 } 
+
+                                    }
+                                Remove-Variable PIP, vmnic, vmnsg, VNET, Subnet                        
                         }
                     }
-                    $tmp
+                }
+                $tmp
         }            
 }
 else
@@ -290,7 +300,6 @@ else
                 $ExcelVar | 
                 ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
                 Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt -Append
-
 
 
                 $excel = Open-ExcelPackage -Path $File -KillExcel
