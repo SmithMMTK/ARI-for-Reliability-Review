@@ -44,6 +44,9 @@ If ($Task -eq 'Processing') {
                 # find string zrs or zgrs in sku.name if found generate new string with "1, 2, 3" values
                 $zones = if ($1.sku.name -match 'zrs') { "1, 2, 3" } else { "" }
 
+                # Set Type value for combine tab
+                $azureServices = 'Azure Storage'
+
                     foreach ($Tag in $Tags) {
                         $obj = @{
                             'ID'                                    = $1.id;
@@ -52,6 +55,8 @@ If ($Task -eq 'Processing') {
                             'Name'                                  = $1.NAME;
                             'Location'                              = $1.LOCATION;
                             'Zone'                                  = $zones;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'SKU'                                   = $1.sku.name;
                             'Tier'                                  = $1.sku.tier;
                           #  'Supports HTTPs Traffic Only'           = $data.supportsHttpsTrafficOnly;
@@ -145,6 +150,24 @@ Else {
         $excel.StorageAcc.Cells["J1"].Hyperlink = 'https://docs.microsoft.com/en-us/azure/storage/common/transport-layer-security-configure-minimum-version?tabs=portal'
 
         Close-ExcelPackage $excel
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
+
+
 
     }
 }
