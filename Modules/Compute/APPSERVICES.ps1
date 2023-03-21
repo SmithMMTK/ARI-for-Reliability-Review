@@ -78,8 +78,16 @@ If ($Task -eq 'Processing')
                 $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
                 # Set Type value for combine tab
-                $azureServices = 'Azure App Services'
-
+                # Check $1.KIND if -like '*functionapp*' then set $azureServices = 'Azure Functions' else set $azureServices = 'Azure App Services'
+                if($1.KIND -like '*functionapp*')
+                {
+                    $azureServices = 'Azure Functions'
+                }
+                else
+                {
+                    $azureServices = 'Azure App Services'
+                }
+                
                 foreach ($Tag in $Tags) {
                     $obj = @{
                         'ID'                            = $1.id;
