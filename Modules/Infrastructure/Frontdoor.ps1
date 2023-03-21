@@ -39,6 +39,11 @@ If ($Task -eq 'Processing') {
                     $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                      # Add ZoneRedundant "Zone Redundant" due it required by default
                     $zones = "Zone Redundant"  
+                    
+                    # Set Type value for combine tab
+                    $azureServices = 'Azure Front Door Services'
+
+
                         foreach ($Tag in $Tags) 
                             {  
                                 $obj = @{
@@ -48,6 +53,8 @@ If ($Task -eq 'Processing') {
                                     'Name'           = $1.NAME;
                                     'Zones'          = $zones;
                                     'Location'       = $1.LOCATION;
+                                    'Resource Name'              = $1.NAME;
+                                    'Azure Services'             = $azureServices;
                                     'Friendly Name'  = $data.friendlyName;
                                     'cName'          = $data.cName;
                                     'State'          = $data.enabledState;
@@ -106,5 +113,21 @@ Else {
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'FrontDoor' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
     
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
     }
 }
