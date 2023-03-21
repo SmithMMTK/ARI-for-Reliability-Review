@@ -76,6 +76,8 @@ If ($Task -eq 'Processing') {
                             'Name'                     = $1.NAME;
                             'SKU'                      = $1.SKU.Name;
                             'Location'                 = $1.LOCATION;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'Zones'                    = [string]$1.Zones;
                             'Type'                     = $data.publicIPAllocationMethod;
                             'Version'                  = $data.publicIPAddressVersion;

@@ -45,6 +45,9 @@ if ($Task -eq 'Processing') {
                     $zonal = "1, 2, 3"
                 } else { $zonal = ""}
                 
+                # Set Type value for combine tab
+                $azureServices = 'Azure SQL Managed Instance'
+
                 foreach ($pvtep in $pvteps) {
                     foreach ($Tag in $Tags) {
                         $obj = @{
@@ -54,6 +57,8 @@ if ($Task -eq 'Processing') {
                             'Name'                  = $1.NAME;
                             'Location'              = $1.LOCATION;
                             'SkuName'               = $1.sku.Name;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'SkuCapacity'           = $1.sku.capacity;
                             'SkuTier'               = $1.sku.tier;
                             'Admin Login'           = $data.adminitrators.login;
@@ -65,7 +70,7 @@ if ($Task -eq 'Processing') {
                             'managedInstanceCreateMode'               = $data.managedInstanceCreateMode;
                             'Resource U'            = $ResUCount;
                             #'Zone Redundant'        = $data.zoneRedundant;
-                            'Zone Redundant'        = $zonal
+                            'Zones'        = $zonal
                             'Tag Name'              = [string]$Tag.Name;
                             'Tag Value'             = [string]$Tag.Value
                         }
@@ -95,7 +100,7 @@ else {
         $Exc.Add('Subscription')
         $Exc.Add('Resource Group')
         $Exc.Add('Name')
-        $Exc.Add('Zone Redundant')
+        $Exc.Add('Zones')
         $Exc.Add('Location')
         $Exc.Add('SkuName')
         $Exc.Add('SkuCapacity')
@@ -119,6 +124,22 @@ else {
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'SQL MI' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
+        
+         ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
 
     }
 }

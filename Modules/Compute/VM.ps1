@@ -37,15 +37,7 @@ If ($Task -eq 'Processing')
 
             foreach ($1 in $vm) 
                 {
-
-                    # If $1.RESOURCEGROUP not contain word "databricks-rg"
-                    if ($1.RESOURCEGROUP -like '*databricks-rg*') 
-                    {
-                        ## Ignore Databricks managed VMs
-                    }
-                    else
-                    {
-                  
+                 
                         $ResUCount = 1
                         $sub1 = $SUB | Where-Object { $_.id -eq $1.subscriptionId }
                         $data = $1.PROPERTIES 
@@ -139,8 +131,30 @@ If ($Task -eq 'Processing')
                             # Get SLA information from $jsonOutput field SLA
                             $SLA = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty SLA
 
+                            
+                            $imgRef = $data.storageProfile.imageReference.publisher
+
+                            # Check imgRef if it is 'microsoftsqlserver' then set ResourceName = $1.NAME + 'sqlserver'
+                            if ($imgRef -eq 'microsoftsqlserver') 
+                            {
+                                $ResourceName = $1.NAME + ' (sqlserver)'
+                            }
+                                elseif ($imgRef -eq 'azureopenshift')
+                                {
+                                    $ResourceName = $1.NAME + ' (azureopenshift)'
+                                }
+                                    elseif ($imgRef -eq 'azuredatabricks')
+                                    {
+                                        $ResourceName = $1.NAME + ' (azuredatabricks)'
+                                    }else
+                                        {
+                                            $ResourceName = $1.NAME
+                                        }
+
                             # Set Type value for combine tab
                             $azureServices = 'Azure Virtual Machines'
+
+
 
                                 foreach ($Tag in $Tags) 
                                     {
@@ -149,7 +163,7 @@ If ($Task -eq 'Processing')
                                         'Subscription'                  = $sub1.Name;
                                         'Resource Group'                = $1.RESOURCEGROUP;
                                         'VM Name'                       = $1.NAME;
-                                        'Resource Name'                 = $1.NAME;
+                                        'Resource Name'                 = $ResourceName;
                                         'Location'                      = $1.LOCATION;
                                         'Zones'                          = [string]$1.ZONES;
                                         'RTO'                           = [string]$RTO;
@@ -196,7 +210,7 @@ If ($Task -eq 'Processing')
                                     }
                                 Remove-Variable PIP, vmnic, vmnsg, VNET, Subnet                        
                         }
-                    }
+                    
                 }
                 $tmp
         }            
