@@ -39,6 +39,10 @@ If ($Task -eq 'Processing') {
                 if ($1.zones) { $Zones = $1.zones } Else { $Zones = "" }
                 $Threat = if($data.threatintelmode -eq 'deny'){'Alert and deny'}elseif($data.threatintelmode -eq 'alert'){'Alert only'}else{'Off'}
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
+                
+                # Set Type value for combine tab
+                $azureServices = 'Azure Firewall'
+
                 Foreach($2 in $data.ipConfigurations)
                     {
                     foreach ($Tag in $Tags) {
@@ -49,6 +53,8 @@ If ($Task -eq 'Processing') {
                             'Name'                              = $1.NAME;
                             'Location'                          = $1.LOCATION;
                             'Zones'                             = [string]$Zones;
+                            'Resource Name'              = $1.NAME;
+                            'Azure Services'             = $azureServices;
                             'SKU'                               = $data.sku.tier;
                             'Threat Intel Mode'                 = $Threat;
                             'Zone'                              = $Zones;
@@ -110,6 +116,22 @@ Else {
         $ExcelVar | 
         ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $Exc | 
         Export-Excel -Path $File -WorksheetName 'Azure Firewall' -AutoSize -MaxAutoSizeRows 100 -TableName $TableName -TableStyle $tableStyle -ConditionalText $condtxt -Style $Style
+
+        ## Export to Combine Tab
+
+        ## Create New ExcCombine Object by copy from $Exc from selected column Subscription, Resource Group, VM Name, Zone 
+        $ExcCombine = New-Object System.Collections.Generic.List[System.Object]
+        $ExcCombine.Add('Subscription')
+        $ExcCombine.Add('Resource Group')
+        $ExcCombine.Add('Azure Services')
+        $ExcCombine.Add('Resource Name')
+        $ExcCombine.Add('Zones')
+        $ExcCombine.Add('Location')
+
+        # # Export-Excel with No Table in the worksheet ResourcesCombine
+        $ExcelVar | 
+        ForEach-Object { [PSCustomObject]$_ } | Select-Object -Unique $ExcCombine | 
+        Export-Excel -Path $File -WorksheetName 'Combine'  -MaxAutoSizeRows 100  -Style $Style, $StyleExt  -Append
 
     }
     <######## Insert Column comments and documentations here following this model #########>
