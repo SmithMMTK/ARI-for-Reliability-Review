@@ -5,7 +5,7 @@ Import-Module ImportExcel
 
 # Set the path to the Excel file you want to modify
 #$File = "/Users/smithm/AzureResourceInventory/a smithmio AzureResourceInventory_Report_2023-03-21_17_03.xlsx"
-$File = "/Users/smithm/AzureResourceInventory/a mimo AzureResourceInventory_Report_2023-03-21_17_07.xlsx"
+$File = "/Users/smithm/AzureResourceInventory/AzureResourceInventory_Report_2023-03-22_19_06.xlsx"
 $FileTemplate = "./template.xlsx"
 $File_Resilience = ($File + " report " +  (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
 

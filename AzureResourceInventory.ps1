@@ -1486,6 +1486,7 @@ if(($Global:PlatOS -eq 'PowerShell Desktop' -or $Global:PlatOS -eq 'PowerShell U
     }
 
 
+    
 ## Get all resources and merge with template.xlsx to create new file
 $FileTemplate = "./template.xlsx"
 
@@ -1516,6 +1517,8 @@ write-host $File -ForegroundColor Cyan
 Write-Host ('Resilience file saved at: ') -NoNewline
 write-host $File_Resilience -ForegroundColor Cyan
 Write-Host ''
+
+
 <#
 if ($Diagram.IsPresent -and $Global:VisioCheck) {
     Write-Host ('Visio file saved at: ') -NoNewline
