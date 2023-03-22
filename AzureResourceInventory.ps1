@@ -1488,7 +1488,7 @@ if(($Global:PlatOS -eq 'PowerShell Desktop' -or $Global:PlatOS -eq 'PowerShell U
 
     
 ## Get all resources and merge with template.xlsx to create new file
-$FileTemplate = "./template.xlsx"
+$FileTemplate = "./templates.xlsx"
 
 Write-Host ''
 Write-Host 'Load items from combine worksheet'
