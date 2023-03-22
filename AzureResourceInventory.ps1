@@ -1474,10 +1474,10 @@ if ($SecurityCenter.IsPresent) {
     Write-Host ('Total Security Advisories: ' + $Secadvco)
 }
 
-Write-Host ''
-Write-Host ('Excel file saved at: ') -NoNewline
-write-host $File -ForegroundColor Cyan
-Write-Host ''
+#Write-Host ''
+#Write-Host ('Excel file saved at: ') -NoNewline
+#write-host $File -ForegroundColor Cyan
+#Write-Host ''
 
 if(($Global:PlatOS -eq 'PowerShell Desktop' -or $Global:PlatOS -eq 'PowerShell Unix') -and $Diagram.IsPresent) {
     Write-Host ('Draw.io Diagram file saved at: ') -NoNewline
@@ -1491,24 +1491,31 @@ $FileTemplate = "./template.xlsx"
 
 Write-Host ''
 Write-Host 'Load items from combine worksheet'
-Write-Host ''
+
 #Import the "Combine" worksheet from the Excel file as a PowerShell object
 $Excel = Import-Excel -Path $File -WorksheetName "Combine"
 
-Write-Host ''
+
 Write-Host 'Create New Resilience report file from template'
-Write-Host ''
+
 # Create New Resilience file from template
 Copy-Item $FileTemplate $File_Resilience
 
 
-Write-Host ''
+
 Write-Host 'Copy all resources to inventory worksheet'
 Write-Host ''
+
 # Copy all combined items to Inventory worksheet
 $Style = New-ExcelStyle -HorizontalAlignment Left -Width 20 -NumberFormat 0
 $Excel | Export-Excel -Path $File_Resilience -WorksheetName "Inventory" -Style $Style -TableStyle $TableStyle 
 
+Write-Host ''
+Write-Host ('Inventory file saved at: ') -NoNewline
+write-host $File -ForegroundColor Cyan
+Write-Host ('Resilience file saved at: ') -NoNewline
+write-host $File_Resilience -ForegroundColor Cyan
+Write-Host ''
 <#
 if ($Diagram.IsPresent -and $Global:VisioCheck) {
     Write-Host ('Visio file saved at: ') -NoNewline

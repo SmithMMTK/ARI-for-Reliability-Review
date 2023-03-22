@@ -1,3 +1,5 @@
+## This script is for shortest time to test combine module
+
 # Import the Excel file as a PowerShell object
 Import-Module ImportExcel
 
