@@ -762,6 +762,8 @@ param ($TenantID,
 
         #### Creating Excel file variable:
         $Global:File = ($DefaultPath + $Global:ReportName + "_Report_" + (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
+        $Global:File_Resilience = ($DefaultPath + $Global:ReportName + "_Resilience_Review_" + (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
+        
         #$Global:DFile = ($DefaultPath + $Global:ReportName + "_Diagram_" + (get-date -Format "yyyy-MM-dd_HH_mm") + ".vsdx")
         $Global:DDFile = ($DefaultPath + $Global:ReportName + "_Diagram_" + (get-date -Format "yyyy-MM-dd_HH_mm") + ".xml")
         Write-Debug ('Excel file:' + $File)
@@ -1483,6 +1485,29 @@ if(($Global:PlatOS -eq 'PowerShell Desktop' -or $Global:PlatOS -eq 'PowerShell U
     Write-Host ''
     }
 
+
+## Get all resources and merge with template.xlsx to create new file
+$FileTemplate = "./template.xlsx"
+
+Write-Host ''
+Write-Host 'Load items from combine worksheet'
+Write-Host ''
+#Import the "Combine" worksheet from the Excel file as a PowerShell object
+$Excel = Import-Excel -Path $File -WorksheetName "Combine"
+
+Write-Host ''
+Write-Host 'Create New Resilience report file from template'
+Write-Host ''
+# Create New Resilience file from template
+Copy-Item $FileTemplate $File_Resilience
+
+
+Write-Host ''
+Write-Host 'Copy all resources to inventory worksheet'
+Write-Host ''
+# Copy all combined items to Inventory worksheet
+$Style = New-ExcelStyle -HorizontalAlignment Left -Width 20 -NumberFormat 0
+$Excel | Export-Excel -Path $File_Resilience -WorksheetName "Inventory" -Style $Style -TableStyle $TableStyle 
 
 <#
 if ($Diagram.IsPresent -and $Global:VisioCheck) {

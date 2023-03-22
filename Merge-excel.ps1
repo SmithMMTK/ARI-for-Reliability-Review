@@ -5,7 +5,7 @@ Import-Module ImportExcel
 #$File = "/Users/smithm/AzureResourceInventory/a smithmio AzureResourceInventory_Report_2023-03-21_17_03.xlsx"
 $File = "/Users/smithm/AzureResourceInventory/a mimo AzureResourceInventory_Report_2023-03-21_17_07.xlsx"
 $FileTemplate = "./template.xlsx"
-$NewFile = ($File + " report " +  (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
+$File_Resilience = ($File + " report " +  (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
 
 
 $TableStyle = "Light20"
@@ -14,6 +14,6 @@ $TableStyle = "Light20"
 $Excel = Import-Excel -Path $File -WorksheetName "Combine"
 $Style = New-ExcelStyle -HorizontalAlignment Left -Width 20 -NumberFormat 0
 
-Copy-Item $FileTemplate $NewFile
+Copy-Item $FileTemplate $File_Resilience
 
-$Excel | Export-Excel -Path $NewFile -WorksheetName "Combine" -Style $Style -TableStyle $TableStyle 
+$Excel | Export-Excel -Path $File_Resilience -WorksheetName "Inventory" -Style $Style -TableStyle $TableStyle 
