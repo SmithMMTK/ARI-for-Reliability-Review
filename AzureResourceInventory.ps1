@@ -1495,6 +1495,7 @@ Write-Host 'Load items from combine worksheet'
 
 #Import the "Combine" worksheet from the Excel file as a PowerShell object
 $Excel = Import-Excel -Path $File -WorksheetName "Combine"
+$Advisory = Import-Excel -Path $File -WorksheetName "Advisory"
 
 
 Write-Host 'Create New Resilience report file from template'
@@ -1510,6 +1511,7 @@ Write-Host ''
 # Copy all combined items to Inventory worksheet
 $Style = New-ExcelStyle -HorizontalAlignment Left -Width 20 -NumberFormat 0
 $Excel | Export-Excel -Path $File_Resilience -WorksheetName "Inventory" -Style $Style -TableStyle $TableStyle 
+$Advisory | Export-Excel -Path $File_Resilience -WorksheetName "Advisory" -Style $Style -TableStyle $TableStyle 
 
 Write-Host ''
 Write-Host ('Inventory file saved at: ') -NoNewline
