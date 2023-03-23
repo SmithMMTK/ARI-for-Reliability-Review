@@ -180,7 +180,7 @@ param ($TenantID,
         Write-Debug ('Starting Extractor function')
         Write-Debug ('Starting Extractor function')
         function checkAzCli() {
-            
+            <#
             Write-Host " "
             Write-Host "*******************************************************************************************************************"
             Write-Host "*******************************************************************************************************************"
@@ -190,42 +190,42 @@ param ($TenantID,
             Write-Host "*******************************************************************************************************************"
             Write-Host "*******************************************************************************************************************"
             Write-Host " "
-            
-            #Write-Debug ('Starting checkAzCli function')
-            #Write-Host "Validating Az Cli.."
-            
-            # 
-            # Skip AZ CLI check for now due it save time on development & debug, but need to remove ti out of the final version
-            #
-            #$azcli = az --version
-            #Write-Debug ('Current az cli version: ' + $azcli[0])
-            #if ($null -eq $azcli) {
-            #    Read-Host "Azure CLI Not Found. Press <Enter> to finish script"
-            #    Exit
-            #}
-            #
+            #>
 
-            # Write-Host "Validating Az Cli Extension.."
-            #$azcliExt = az extension list --output json | ConvertFrom-Json
-            # $azcliExt = $azcliExt | Where-Object {$_.name -eq 'resource-graph'}
-            #Write-Debug ('Current Resource-Graph Extension Version: ' + $azcliExt.version)
-            # $AzcliExtV = $azcliExt | Where-Object {$_.name -eq 'resource-graph'}
-            #if (!$AzcliExtV) {
-            #    Write-Host "Adding Az Cli Extension"
-            #    az extension add --name resource-graph
-            #}
-            #Write-Host "Validating ImportExcel Module.."
-            #$VarExcel = Get-InstalledModule -Name ImportExcel -ErrorAction silentlycontinue
-            #Write-Debug ('ImportExcel Module Version: ' + ([string]$VarExcel.Version.Major + '.' + [string]$VarExcel.Version.Minor + '.' + [string]$VarExcel.Version.Build))
-            #if ($null -eq $VarExcel) {
-            #    Write-Host "Trying to install ImportExcel Module.."
-            #    Install-Module -Name ImportExcel -Force
-            #}
-            #$VarExcel = Get-InstalledModule -Name ImportExcel -ErrorAction silentlycontinue
-            #if ($null -eq $VarExcel) {
-            #    Read-Host 'Admininstrator rights required to install ImportExcel Module. Press <Enter> to finish script'
-            #    Exit
-            #}
+            Write-Debug ('Starting checkAzCli function')
+            Write-Host "Validating Az Cli.."
+            
+             
+            
+            $azcli = az --version
+            Write-Debug ('Current az cli version: ' + $azcli[0])
+            if ($null -eq $azcli) {
+                Read-Host "Azure CLI Not Found. Press <Enter> to finish script"
+                Exit
+            }
+            
+
+            Write-Host "Validating Az Cli Extension.."
+            $azcliExt = az extension list --output json | ConvertFrom-Json
+            $azcliExt = $azcliExt | Where-Object {$_.name -eq 'resource-graph'}
+            Write-Debug ('Current Resource-Graph Extension Version: ' + $azcliExt.version)
+            $AzcliExtV = $azcliExt | Where-Object {$_.name -eq 'resource-graph'}
+            if (!$AzcliExtV) {
+                Write-Host "Adding Az Cli Extension"
+                az extension add --name resource-graph
+            }
+            Write-Host "Validating ImportExcel Module.."
+            $VarExcel = Get-InstalledModule -Name ImportExcel -ErrorAction silentlycontinue
+            Write-Debug ('ImportExcel Module Version: ' + ([string]$VarExcel.Version.Major + '.' + [string]$VarExcel.Version.Minor + '.' + [string]$VarExcel.Version.Build))
+            if ($null -eq $VarExcel) {
+                Write-Host "Trying to install ImportExcel Module.."
+                Install-Module -Name ImportExcel -Force
+            }
+            $VarExcel = Get-InstalledModule -Name ImportExcel -ErrorAction silentlycontinue
+            if ($null -eq $VarExcel) {
+                Read-Host 'Admininstrator rights required to install ImportExcel Module. Press <Enter> to finish script'
+                Exit
+            }
         }
 
         function LoginSession() {
