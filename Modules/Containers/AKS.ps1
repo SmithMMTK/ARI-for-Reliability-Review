@@ -43,6 +43,7 @@ If ($Task -eq 'Processing')
                 $Tags = if(![string]::IsNullOrEmpty($1.tags.psobject.properties)){$1.tags.psobject.properties}else{'0'}
                 
 
+
                 foreach ($2 in $data.agentPoolProfiles) {
 
                   # Load Get-Service Detail Module
@@ -56,6 +57,7 @@ If ($Task -eq 'Processing')
                         Get-ServiceDetails -Type 'AKS' -Resilience 'Single'
                     }
                     
+
 
                     # Get RTO information from $jsonOutput field RTO
                     $RTO = $jsonOutput | ConvertFrom-Json | Select-Object -ExpandProperty RTO
@@ -149,9 +151,6 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('Clusters')
         $Exc.Add('Zones')
-        $Exc.Add('RTO')
-        $Exc.Add('RPO')
-        $Exc.Add("SLA")
         $Exc.Add('Location')
         $Exc.Add('Kubernetes Version')
         $Exc.Add('Orchestrator Version')

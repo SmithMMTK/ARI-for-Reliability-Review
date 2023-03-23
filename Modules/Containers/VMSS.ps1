@@ -170,9 +170,6 @@ Else
         $Exc.Add('Resource Group')
         $Exc.Add('AKS / SFC')
         $exc.Add('Zones')
-        $Exc.Add('RTO')
-        $Exc.Add('RPO')
-        $Exc.Add("SLA")
         $Exc.Add('Name')
         $Exc.Add('Location')
         
