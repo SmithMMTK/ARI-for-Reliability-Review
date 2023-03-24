@@ -5,7 +5,7 @@ Import-Module ImportExcel
 
 # Set the path to the Excel file you want to modify
 #$File = "/Users/smithm/AzureResourceInventory/a smithmio AzureResourceInventory_Report_2023-03-21_17_03.xlsx"
-$File = "/Users/smithm/AzureResourceInventory/AzureResourceInventory_Report_2023-03-22_19_06.xlsx"
+$File = "/Users/smithm/AzureResourceInventory/AzureResourceInventory_Report_2023-03-23_12_38.xlsx"
 $FileTemplate = "./templates.xlsx"
 $File_Resilience = ($File + " report " +  (get-date -Format "yyyy-MM-dd_HH_mm") + ".xlsx")
 
@@ -18,4 +18,5 @@ $Style = New-ExcelStyle -HorizontalAlignment Left -Width 20 -NumberFormat 0
 
 Copy-Item $FileTemplate $File_Resilience
 
-$Excel | Export-Excel -Path $File_Resilience -WorksheetName "Inventory" -Style $Style -TableStyle $TableStyle 
+$Excel | Export-Excel -Path $File_Resilience -WorksheetName "Inventory" -Style $Style -TableStyle $TableStyle -Password "1234"
+# -Password "1234"
