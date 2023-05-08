@@ -44,6 +44,9 @@ If ($Task -eq 'Processing') {
                 # find string zrs or zgrs in sku.name if found generate new string with "1, 2, 3" values
                 $zones = if ($1.sku.name -match 'zrs') { "1, 2, 3" } else { "" }
 
+
+
+
                 # Set Type value for combine tab
                 $azureServices = 'Azure Storage'
 
@@ -55,6 +58,7 @@ If ($Task -eq 'Processing') {
                             'Name'                                  = $1.NAME;
                             'Location'                              = $1.LOCATION;
                             'Zone'                                  = $zones;
+ 
                             'Resource Name'              = $1.NAME;
                             'Azure Services'             = $azureServices;
                             'SKU'                                   = $1.sku.name;
@@ -108,6 +112,7 @@ Else {
         $Exc.Add('Name')
         $Exc.Add('Zone')
         $Exc.Add('Location')
+     
        
         $Exc.Add('SKU')
         $Exc.Add('Tier')
